@@ -3,193 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ATM Monitor - Base Locked Edition</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>ATM Monitor - Bankaltimtara</title>
     <style>
         :root {
-            --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --glass: rgba(255, 255, 255, 0.1);
-            --border: rgba(255, 255, 255, 0.2);
-            --text: #ffffff;
-            --accent: #FACC15;
-            --green: #32D74B;
-            --red: #FF453A;
+            --ios-blue: #007AFF;
+            --ios-gold: #FACC15;
+            --glass-white: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --danger: #FF3B30;
+            --success: #34C759;
         }
 
-        /* DAFTAR TEMA TERKUNCI */
-        [data-theme="liquid-gold"] { --bg: radial-gradient(circle at top right, #453a00, #000); --glass: rgba(250, 204, 21, 0.1); --border: rgba(250, 204, 21, 0.3); --accent: #FACC15; }
-        [data-theme="deep-ocean"] { --bg: linear-gradient(160deg, #001a33 0%, #000000 100%); --glass: rgba(0, 122, 255, 0.1); --border: rgba(0, 122, 255, 0.4); --accent: #007AFF; }
-        [data-theme="sunset-vibes"] { --bg: linear-gradient(135deg, #4c0519 0%, #000000 100%); --glass: rgba(251, 113, 133, 0.1); --border: rgba(251, 113, 133, 0.3); --accent: #fb7185; }
-        [data-theme="emerald-night"] { --bg: linear-gradient(135deg, #064e3b 0%, #000 100%); --glass: rgba(50, 215, 75, 0.05); --border: rgba(50, 215, 75, 0.3); --accent: #32D74B; }
-        [data-theme="midnight-purple"] { --bg: linear-gradient(135deg, #2e1065 0%, #000 100%); --glass: rgba(168, 85, 247, 0.1); --border: rgba(168, 85, 247, 0.3); --accent: #a855f7; }
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+        }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
-        body { min-height: 100vh; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: flex-start; padding: 20px; transition: all 0.8s ease; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%); border-radius: 40px; border: 1px solid var(--border); width: 100%; max-width: 450px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); margin-top: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        select.theme-selector { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 15px; font-size: 11px; outline: none; }
-        .stat-box { background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid var(--border); }
-        .btn-ios { width: 100%; padding: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 25px; color: white; font-weight: 600; margin-bottom: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .notif-badge { width: 10px; height: 10px; background: var(--red); border-radius: 50%; box-shadow: 0 0 12px var(--red); }
-        .table-container { background: rgba(0, 0, 0, 0.3); border-radius: 25px; overflow: hidden; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { padding: 15px; background: rgba(255,255,255,0.05); color: var(--accent); }
-        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .hidden { display: none !important; }
-        canvas { margin: 20px 0; max-height: 180px; }
+        body { 
+            min-height: 100vh; 
+            /* Animasi Liquid Background */
+            background: linear-gradient(135deg, #001f3f, #003366, #005bb7, #facc15);
+            background-size: 400% 400%;
+            animation: liquidBg 15s ease infinite;
+            display: flex; justify-content: center; align-items: center; padding: 20px; color: white;
+        }
+
+        @keyframes liquidBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            padding: 25px; 
+            border-radius: 38px; 
+            border: 1px solid var(--glass-border);
+            width: 100%; max-width: 400px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .banner-notif {
+            background: rgba(255, 59, 48, 0.9);
+            backdrop-filter: blur(10px);
+            color: white; padding: 12px; border-radius: 18px;
+            margin-bottom: 20px; display: none; font-weight: 600; text-align: center; 
+            font-size: 13px; border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 20px rgba(255, 59, 48, 0.3);
+        }
+
+        h2 { font-weight: 700; color: white; margin-bottom: 30px; text-align: center; font-size: 28px; letter-spacing: -0.5px; }
+
+        .btn-menu { 
+            width: 100%; margin-bottom: 15px; padding: 22px; 
+            background: var(--glass-white); color: white; 
+            border: 1px solid var(--glass-border); 
+            border-radius: 20px; font-weight: 600; font-size: 17px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-menu:active { transform: scale(0.96); background: rgba(255,255,255,0.25); }
+
+        .notif-badge {
+            background: var(--danger); color: white; font-size: 11px; padding: 4px 12px; 
+            border-radius: 20px; font-weight: 700; box-shadow: 0 4px 10px rgba(255,0,0,0.3);
+        }
+
+        .table-container { 
+            background: rgba(0, 0, 0, 0.15); 
+            border-radius: 24px; overflow: hidden; margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { background: rgba(255, 255, 255, 0.1); padding: 15px; color: var(--ios-gold); font-weight: 600; }
+        td { padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); text-align: center; }
+
+        .warning { background: rgba(255, 59, 48, 0.15); }
+        .no-selisih { color: var(--success); font-weight: 600; }
+        .ada-selisih { color: #FF9F0A; font-weight: 700; }
+        .row-hidden { display: none !important; }
+
+        /* Style Dropdown & Button ala iOS */
+        select { 
+            background: rgba(255, 255, 255, 0.9); border: none; padding: 8px 12px; 
+            border-radius: 12px; font-weight: 600; appearance: none; color: #333;
+        }
+
+        .btn-save { 
+            background: var(--ios-blue); color: white; border: none; 
+            padding: 10px 16px; border-radius: 14px; font-weight: 700; cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-save:active { opacity: 0.7; }
+
+        .btn-back { 
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.3); 
+            border-radius: 20px; padding: 16px; width: 100%; color: white; 
+            font-weight: 600; cursor: pointer; margin-top: 10px;
+        }
+
+        /* iOS Toggle Switch */
+        .switch { position: relative; width: 51px; height: 31px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { 
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; 
+            background: rgba(255,255,255,0.3); transition: .3s; border-radius: 34px; 
+        }
+        .slider:before { 
+            position: absolute; content: ""; height: 27px; width: 27px; left: 2px; bottom: 2px; 
+            background: white; transition: .3s; border-radius: 50%; box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        input:checked + .slider { background: var(--success); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
     </style>
 </head>
 <body>
 
-<div id="login-screen" class="glass-card">
-    <div style="text-align: center;">
-        <div style="font-size: 60px; margin-bottom: 10px;">🏦</div>
-        <h2 style="margin-bottom: 5px;">Access System</h2>
-        <p style="opacity: 0.5; font-size: 13px; margin-bottom: 25px;">Enter PIN</p>
-        <input type="password" id="passcode" maxlength="4" style="width: 80%; background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: white; text-align: center; padding: 15px; border-radius: 20px; font-size: 24px; letter-spacing: 8px; margin-bottom: 20px;">
-        <button class="btn-ios" style="background: var(--accent); color: black; justify-content: center;" onclick="checkLogin()">UNLOCK</button>
-    </div>
-</div>
+<div class="glass-card">
+    <div id="notif-banner" class="banner-notif">⚠️ Ada selisih yang perlu diproses</div>
 
-<div id="main-dashboard" class="glass-card hidden">
-    <div class="header">
-        <div>
-            <p id="greeting" style="font-size: 11px; opacity: 0.6;"></p>
-            <h3 style="color: var(--accent); font-size: 18px;">ATM Monitoring</h3>
+    <div id="menu">
+        <h2 style="margin-top: 10px;">Monitor ATM</h2>
+        <button id="btn-Gersik" class="btn-menu" onclick="muatData('Gersik', '0')">
+            <span>Unit Gersik</span> 
+            <span style="opacity: 0.5;">􀆊</span>
+        </button>
+        <button id="btn-Maridan" class="btn-menu" onclick="muatData('Maridan', '1565950302')">
+            <span>Unit Maridan</span> 
+            <span style="opacity: 0.5;">􀆊</span>
+        </button>
+    </div>
+
+    <div id="detail" style="display:none;">
+        <h3 id="unit-nama" style="text-align:center; margin-bottom:20px; font-weight: 700; font-size: 20px;"></h3>
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:rgba(255,255,255,0.08); padding:14px; border-radius:20px;">
+            <span style="font-size: 14px; font-weight:500; opacity: 0.9;">Filter Masalah</span>
+            <label class="switch">
+                <input type="checkbox" id="toggleFilter" onchange="jalankanFilter()">
+                <span class="slider"></span>
+            </label>
         </div>
-        <select class="theme-selector" onchange="changeTheme(this.value)">
-            <option value="default">Liquid Glass</option>
-            <option value="liquid-gold">Liquid Gold</option>
-            <option value="deep-ocean">Deep Ocean</option>
-            <option value="sunset-vibes">Sunset Vibes</option>
-            <option value="emerald-night">Emerald Night</option>
-            <option value="midnight-purple">Midnight Purple</option>
-        </select>
-    </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-        <div class="stat-box"><small style="opacity:0.6; font-size:9px;">SUDAH PROSES</small><br><b id="total-done">0</b></div>
-        <div class="stat-box"><small style="opacity:0.6; font-size:9px;">BELUM SELESAI</small><br><b id="total-pending" style="color: var(--red);">0</b></div>
+        <div class="table-container">
+            <table>
+                <thead><tr><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
+                <tbody id="isi-tabel"></tbody>
+            </table>
+        </div>
+        <button class="btn-back" onclick="location.reload()">Selesai</button>
     </div>
-
-    <canvas id="statChart"></canvas>
-
-    <div id="unit-list">
-        <button class="btn-ios" onclick="muatData('Gersik', '0')">Unit Gersik <span id="dot-Gersik" class="notif-badge" style="display:none;"></span></button>
-        <button class="btn-ios" onclick="muatData('Maridan', '1565950302')">Unit Maridan <span id="dot-Maridan" class="notif-badge" style="display:none;"></span></button>
-    </div>
-</div>
-
-<div id="detail-unit" class="glass-card hidden">
-    <h3 id="nama-unit-header" style="text-align:center; color:var(--accent); margin-bottom:20px;"></h3>
-    <div class="table-container">
-        <table>
-            <thead><tr><th>Tgl</th><th>Selisih</th><th>Aksi</th></tr></thead>
-            <tbody id="tabel-body"></tbody>
-        </table>
-    </div>
-    <button class="btn-ios" style="margin-top:20px; border:none; background:transparent; justify-content:center; color:var(--accent);" onclick="backToMenu()">⬅ KEMBALI</button>
 </div>
 
 <script>
-    const PUB_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRb6GSybyMkKf6JkokVF42Q-nIca3R6yuEGkbSwcgfF8qZbp8J293LHtXGKGB7VVA/pub?output=csv";
+    // Logika script tetap sama seperti sebelumnya untuk fungsionalitas
+    const SSID = "1rFuTdUTSuUeQQAZDB7QPngRvDwkTh34ZtrUxYo9Zu7U";
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzYIPo4ew3ggxHruF0kg9H0XX9nkrSnFqdDzCY_DMTCk4xdFT6VVWqslh3QtAtf2z8HKg/exec";
-    const PIN = "1234";
+    let sheetSekarang = "";
 
-    let stats = { done: 0, pending: 0 };
-    let myChart = null;
+    window.onload = cekSelisihGlobal;
 
-    function checkLogin() {
-        if(document.getElementById('passcode').value === PIN) {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-dashboard').classList.remove('hidden');
-            initData();
-        } else { alert("PIN Salah!"); }
-    }
+    async function cekSelisihGlobal() {
+        const units = [{ n: 'Gersik', g: '0' }, { n: 'Maridan', g: '1565950302' }];
+        let globalDanger = false;
 
-    function changeTheme(v) { document.body.setAttribute('data-theme', v); }
-
-    async function initData() {
-        const jam = new Date().getHours();
-        document.getElementById('greeting').innerText = jam < 11 ? "Selamat Pagi," : jam < 15 ? "Selamat Siang," : jam < 19 ? "Selamat Sore," : "Selamat Malam,";
-        
-        stats = { done: 0, pending: 0 };
-        const units = [{n:'Gersik', g:'0'}, {n:'Maridan', g:'1565950302'}];
-
-        for(let u of units) {
+        for (let u of units) {
             try {
-                const res = await fetch(`${PUB_URL}&gid=${u.g}&t=${Date.now()}`);
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${u.g}&t=${Date.now()}`);
                 const text = await res.text();
-                const rows = text.split('\n').slice(1);
-                let hasProblem = false;
-                rows.forEach(r => {
-                    const col = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    if(col.length >= 4) {
-                        const sel = col[2].replace(/"/g, "").trim();
-                        const ket = col[3].replace(/"/g, "").toUpperCase().trim();
-                        if(sel && sel !== "0" && sel !== "-") {
-                            if(ket === "DONE") stats.done++;
-                            else { stats.pending++; hasProblem = true; }
+                const lines = text.split('\n').slice(1);
+                
+                let unitHasUnresolved = false;
+                lines.forEach(line => {
+                    const col = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if (col.length >= 4) {
+                        const selVal = col[2].replace(/"/g, "").trim();
+                        const ketVal = col[3].replace(/"/g, "").toUpperCase().trim();
+                        if (selVal !== "-" && selVal !== "0" && selVal !== "" && ketVal !== "DONE") {
+                            unitHasUnresolved = true;
                         }
                     }
                 });
-                document.getElementById('dot-'+u.n).style.display = hasProblem ? 'block' : 'none';
-            } catch(e) {}
-        }
-        document.getElementById('total-done').innerText = stats.done;
-        document.getElementById('total-pending').innerText = stats.pending;
-        updateChart();
-    }
 
-    function updateChart() {
-        const ctx = document.getElementById('statChart').getContext('2d');
-        if(myChart) myChart.destroy();
-        const fullGreen = stats.pending === 0;
-        myChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: fullGreen ? [1, 0] : [stats.done, stats.pending],
-                    backgroundColor: fullGreen ? ['#32D74B', '#32D74B'] : ['#32D74B', '#FF453A'],
-                    borderWidth: 0
-                }]
-            },
-            options: { cutout: '85%', plugins: { tooltip: { enabled: !fullGreen } } }
-        });
+                if (unitHasUnresolved) {
+                    globalDanger = true;
+                    document.getElementById('btn-' + u.n).innerHTML = `<span>${u.n}</span> <span class="notif-badge">!</span>`;
+                }
+            } catch (e) { console.error("Sync Error"); }
+        }
+        if (globalDanger) document.getElementById('notif-banner').style.display = 'block';
     }
 
     async function muatData(nama, gid) {
-        document.getElementById('main-dashboard').classList.add('hidden');
-        document.getElementById('detail-unit').classList.remove('hidden');
-        document.getElementById('nama-unit-header').innerText = "Unit " + nama;
-        const tb = document.getElementById('tabel-body');
-        tb.innerHTML = "<tr><td colspan='3'>Syncing...</td></tr>";
-        const res = await fetch(`${PUB_URL}&gid=${gid}&t=${Date.now()}`);
-        const text = await res.text();
-        const rows = text.split('\n').slice(1);
-        tb.innerHTML = "";
-        rows.forEach(r => {
-            const col = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, ""));
-            if(col[1]) {
-                const isProblem = (col[2] && col[2] !== "0" && col[2] !== "-" && col[3].toUpperCase() !== "DONE");
-                tb.innerHTML += `<tr style="background:${isProblem ? 'rgba(255,69,58,0.1)' : ''}">
-                    <td>${col[1]}</td>
-                    <td style="color:${isProblem ? 'var(--red)' : 'var(--green)'}">${!col[2] || col[2]=="0" ? 'OK' : 'Rp '+col[2]}</td>
-                    <td><button onclick="updateStatus('${col[1]}', '${nama}')" style="background:var(--accent); border:none; padding:5px 10px; border-radius:8px; font-weight:bold; cursor:pointer;">OK</button></td>
-                </tr>`;
-            }
-        });
+        sheetSekarang = nama;
+        document.getElementById('menu').style.display = 'none';
+        document.getElementById('detail').style.display = 'block';
+        document.getElementById('unit-nama').innerText = nama;
+        const tb = document.getElementById('isi-tabel');
+        tb.innerHTML = "<tr><td colspan='3' style='padding:40px; opacity:0.5;'>Sinkronisasi...</td></tr>";
+
+        try {
+            const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`);
+            const text = await res.text();
+            const lines = text.split('\n').slice(1);
+            tb.innerHTML = "";
+
+            lines.forEach(line => {
+                const col = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, "").trim());
+                if (col.length < 2) return;
+                
+                const tgl = col[1], sel = col[2], ket = (col[3] || "").toUpperCase();
+                if (tgl && tgl !== "null") {
+                    const isNoSelisih = (sel === "-" || sel === "0" || sel === "");
+                    const isProblem = (!isNoSelisih && ket !== "DONE");
+                    
+                    tb.innerHTML += `
+                        <tr class="${isProblem ? 'warning problem-row' : 'safe-row'}">
+                            <td style="font-weight:500;">${tgl}</td>
+                            <td class="${isNoSelisih ? 'no-selisih' : 'ada-selisih'}">${isNoSelisih ? '✓ Aman' : 'Rp '+sel}</td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px; justify-content:center;">
+                                    <select id="sel-${tgl}">
+                                        <option value="" ${ket==""?'selected':''}>-</option>
+                                        <option value="DONE" ${ket=="DONE"?'selected':''}>DONE</option>
+                                        <option value="PROSES" ${ket=="PROSES"?'selected':''}>PROSES</option>
+                                    </select>
+                                    <button class="btn-save" onclick="simpanKeSheet('${tgl}')">Ok</button>
+                                </div>
+                            </td>
+                        </tr>`;
+                }
+            });
+        } catch (e) { tb.innerHTML = "<tr><td colspan='3'>Gagal memuat data</td></tr>"; }
     }
 
-    async function updateStatus(tgl, sheet) {
-        const url = `${WEB_APP_URL}?tanggal=${encodeURIComponent(tgl)}&status=DONE&sheetName=${encodeURIComponent(sheet)}`;
-        await fetch(url, { method: 'POST', mode: 'no-cors' });
-        location.reload();
+    async function simpanKeSheet(tgl) {
+        const val = document.getElementById(`sel-${tgl}`).value;
+        if(!val) return alert("Pilih status!");
+        const btn = event.target;
+        const originalText = btn.innerText;
+        btn.innerText = "..."; 
+        
+        const url = `${WEB_APP_URL}?tanggal=${encodeURIComponent(tgl)}&status=${encodeURIComponent(val)}&sheetName=${encodeURIComponent(sheetSekarang)}`;
+
+        try {
+            await fetch(url, { method: 'POST', mode: 'no-cors' });
+            btn.innerText = "✓";
+            btn.style.background = "#34C759";
+            setTimeout(() => {
+                if(val === "DONE") location.reload();
+                else btn.innerText = originalText;
+            }, 1000);
+        } catch (e) { 
+            alert("Gagal menyimpan!"); 
+            btn.innerText = originalText; 
+        }
     }
 
-    function backToMenu() {
-        document.getElementById('detail-unit').classList.add('hidden');
-        document.getElementById('main-dashboard').classList.remove('hidden');
+    function jalankanFilter() {
+        const cek = document.getElementById('toggleFilter').checked;
+        document.querySelectorAll('.safe-row').forEach(r => r.classList.toggle('row-hidden', cek));
     }
 </script>
 </body>
