@@ -3,89 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ATM Monitor - Bankaltimtara iOS 26</title>
+    <title>ATM Monitor - iOS 26 Pro</title>
     <style>
         :root {
             --ios-bg: #003366; 
-            --glass-bg: rgba(0, 51, 102, 0.4); 
-            --glass-border: rgba(255, 215, 0, 0.3); 
+            --glass-bg: rgba(0, 51, 102, 0.45); 
+            --glass-border: rgba(255, 215, 0, 0.35); 
             --accent-yellow: #FACC15; 
             --accent-red: #FF453A;
             --accent-green: #32D74B;
+            --text-main: #FFFFFF;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body { 
             min-height: 100vh; 
             background: linear-gradient(135deg, #003366 0%, #004e92 50%, #facc15 150%);
             background-attachment: fixed;
             display: flex; justify-content: center; align-items: center; 
-            color: white; padding: 15px;
+            color: var(--text-main); padding: 15px;
         }
 
         .glass-card { 
             background: var(--glass-bg);
-            backdrop-filter: blur(30px) saturate(150%);
-            -webkit-backdrop-filter: blur(30px) saturate(150%);
-            padding: 24px; border-radius: 40px; 
+            backdrop-filter: blur(35px) saturate(160%);
+            -webkit-backdrop-filter: blur(35px) saturate(160%);
+            padding: 24px; border-radius: 44px; 
             border: 1px solid var(--glass-border);
             width: 100%; max-width: 420px;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
         }
 
-        h2 { font-weight: 700; color: var(--accent-yellow); margin-bottom: 24px; text-align: center; }
+        /* Dynamic Island Style Notification */
+        .banner-notif {
+            background: var(--accent-red);
+            color: white; padding: 12px; border-radius: 20px;
+            margin-bottom: 20px; display: none;
+            font-weight: 700; text-align: center; font-size: 13px;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 10px 20px rgba(255, 69, 58, 0.3);
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        h2 { font-weight: 800; color: var(--accent-yellow); margin-bottom: 25px; text-align: center; font-size: 26px; }
 
         .btn-menu { 
-            width: 100%; margin-bottom: 12px; padding: 18px; 
-            background: rgba(255, 255, 255, 0.1); 
+            width: 100%; margin-bottom: 12px; padding: 20px; 
+            background: rgba(255, 255, 255, 0.12); 
             color: white; border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 20px; font-weight: 600; cursor: pointer;
+            border-radius: 22px; font-weight: 600; font-size: 17px;
+            cursor: pointer; transition: 0.3s;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .filter-area { 
-            background: rgba(250, 204, 21, 0.1); padding: 14px; 
-            border-radius: 18px; margin-bottom: 15px; display: flex; 
-            justify-content: space-between; align-items: center; 
-            border: 0.5px solid var(--glass-border);
+        .btn-menu:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.2); }
+
+        .notif-badge {
+            background: var(--accent-red); color: white;
+            font-size: 10px; padding: 4px 10px; border-radius: 12px;
+            font-weight: 800; animation: pulse 1.5s infinite;
         }
 
-        .table-container { background: rgba(0, 0, 0, 0.2); border-radius: 20px; overflow: hidden; margin-bottom: 15px; }
+        @keyframes pulse {
+            0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; }
+        }
+
+        .table-container { background: rgba(0, 0, 0, 0.2); border-radius: 24px; overflow: hidden; margin-bottom: 15px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background: rgba(250, 204, 21, 0.2); padding: 12px; color: var(--accent-yellow); }
-        td { padding: 12px; border-bottom: 0.5px solid rgba(255, 255, 255, 0.05); text-align: center; }
+        th { background: rgba(250, 204, 21, 0.2); padding: 14px; color: var(--accent-yellow); text-align: center; }
+        td { padding: 14px; border-bottom: 0.5px solid rgba(255, 255, 255, 0.05); text-align: center; }
 
-        .warning { background: rgba(255, 69, 58, 0.15) !important; }
-        .no-selisih { color: var(--accent-green); font-weight: bold; }
-        .ada-selisih { color: var(--accent-red); font-weight: bold; }
+        .warning { background: rgba(255, 69, 58, 0.18) !important; }
+        .no-selisih { color: var(--accent-green); font-weight: 600; }
+        .ada-selisih { color: var(--accent-red); font-weight: 800; }
         .row-hidden { display: none !important; }
 
-        select { background: white; color: #003366; border: none; padding: 6px; border-radius: 8px; font-weight: bold; }
-        .btn-save { background: var(--accent-yellow); color: #003366; border: none; padding: 7px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        select { background: white; color: #003366; border: none; padding: 6px; border-radius: 8px; font-weight: 700; font-size: 12px; }
+        .btn-save { background: var(--accent-yellow); color: #003366; border: none; padding: 8px 14px; border-radius: 10px; font-weight: 800; cursor: pointer; }
         
-        .btn-back { background: transparent; border: 1.5px solid var(--accent-yellow); border-radius: 18px; padding: 12px; width: 100%; color: var(--accent-yellow); font-weight: 700; cursor: pointer; }
+        .btn-back { background: transparent; border: 1.5px solid var(--accent-yellow); border-radius: 20px; padding: 14px; width: 100%; color: var(--accent-yellow); font-weight: 700; cursor: pointer; margin-top: 10px; }
 
         /* iOS Switch */
-        .switch { position: relative; width: 50px; height: 26px; }
+        .switch { position: relative; width: 50px; height: 28px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 2px; bottom: 2px; background: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 2px; bottom: 2px; background: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background: var(--accent-yellow); }
-        input:checked + .slider:before { transform: translateX(24px); background: #003366; }
+        input:checked + .slider:before { transform: translateX(22px); background: #003366; }
     </style>
 </head>
 <body>
 
 <div class="glass-card">
+    <div id="notif-banner" class="banner-notif">􀝊 PERINGATAN: ADA SELISIH!</div>
+
     <div id="menu">
         <h2>Bankaltimtara 🏦</h2>
-        <button class="btn-menu" onclick="muatData('Gersik', '0')">Unit Gersik</button>
-        <button class="btn-menu" onclick="muatData('Maridan', '1565950302')">Unit Maridan</button>
+        <button id="btn-Gersik" class="btn-menu" onclick="muatData('Gersik', '0')">Unit Gersik <span>􀄫</span></button>
+        <button id="btn-Maridan" class="btn-menu" onclick="muatData('Maridan', '1565950302')">Unit Maridan <span>􀄫</span></button>
     </div>
 
     <div id="detail" style="display:none;">
         <h3 id="unit-nama" style="text-align:center; margin-bottom:15px; color: var(--accent-yellow);"></h3>
-        <div class="filter-area">
-            <span style="font-size: 12px;">Hanya Tampilkan Selisih</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:rgba(255,255,255,0.05); padding:12px; border-radius:15px;">
+            <span style="font-size: 13px; font-weight:600;">Hanya Selisih</span>
             <label class="switch">
                 <input type="checkbox" id="toggleFilter" onchange="jalankanFilter()">
                 <span class="slider"></span>
@@ -97,15 +125,41 @@
                 <tbody id="isi-tabel"></tbody>
             </table>
         </div>
-        <button class="btn-back" onclick="location.reload()">Kembali</button>
+        <button class="btn-back" onclick="location.reload()">􀰌 Kembali</button>
     </div>
 </div>
 
 <script>
     const SSID = "1rFuTdUTSuUeQQAZDB7QPngRvDwkTh34ZtrUxYo9Zu7U";
-    // PASTI KAN URL INI ADALAH URL DEPLOYMENT TERBARU (ENDINGNYA /exec)
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzYIPo4ew3ggxHruF0kg9H0XX9nkrSnFqdDzCY_DMTCk4xdFT6VVWqslh3QtAtf2z8HKg/exec";
     let sheetSekarang = "";
+
+    window.onload = cekSelisihGlobal;
+
+    async function cekSelisihGlobal() {
+        const units = [{ n: 'Gersik', g: '0' }, { n: 'Maridan', g: '1565950302' }];
+        let globalDanger = false;
+
+        for (let u of units) {
+            try {
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${u.g}&t=${Date.now()}`);
+                const text = await res.text();
+                const hasProblem = text.split('\n').some(line => {
+                    const col = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if (col.length < 4) return false;
+                    const sel = col[2].replace(/"/g, "").trim();
+                    const ket = col[3].replace(/"/g, "").toUpperCase().trim();
+                    return (sel !== "-" && sel !== "0" && sel !== "" && ket !== "DONE");
+                });
+
+                if (hasProblem) {
+                    globalDanger = true;
+                    document.getElementById('btn-' + u.n).innerHTML = `${u.n} <span class="notif-badge">ADA SELISIH</span>`;
+                }
+            } catch (e) { console.error("Sync Error"); }
+        }
+        if (globalDanger) document.getElementById('notif-banner').style.display = 'block';
+    }
 
     async function muatData(nama, gid) {
         sheetSekarang = nama;
@@ -113,7 +167,7 @@
         document.getElementById('detail').style.display = 'block';
         document.getElementById('unit-nama').innerText = "ATM " + nama;
         const tb = document.getElementById('isi-tabel');
-        tb.innerHTML = "<tr><td colspan='3' style='padding:20px'>Memuat...</td></tr>";
+        tb.innerHTML = "<tr><td colspan='3' style='padding:30px; opacity:0.6;'>📡 Menghubungkan...</td></tr>";
 
         try {
             const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`);
@@ -123,9 +177,7 @@
 
             lines.forEach(line => {
                 const col = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, "").trim());
-                const tgl = col[1];
-                const sel = col[2];
-                const ket = (col[3] || "").toUpperCase();
+                const tgl = col[1], sel = col[2], ket = (col[3] || "").toUpperCase();
 
                 if (tgl && tgl !== "null") {
                     const isNoSelisih = (sel === "-" || sel === "0" || sel === "");
@@ -133,8 +185,8 @@
                     
                     tb.innerHTML += `
                         <tr class="${isProblem ? 'warning problem-row' : 'safe-row'}">
-                            <td style="opacity:0.7">${tgl}</td>
-                            <td class="${isNoSelisih ? 'no-selisih' : 'ada-selisih'}">${isNoSelisih ? 'Aman' : 'Rp '+sel}</td>
+                            <td style="font-size:11px; opacity:0.7;">${tgl}</td>
+                            <td class="${isNoSelisih ? 'no-selisih' : 'ada-selisih'}">${isNoSelisih ? '􀁢 Aman' : 'Rp '+sel}</td>
                             <td>
                                 <select id="sel-${tgl}">
                                     <option value="" ${ket==""?'selected':''}>-</option>
@@ -146,26 +198,22 @@
                         </tr>`;
                 }
             });
-        } catch (e) { tb.innerHTML = "<tr><td colspan='3'>Error Koneksi</td></tr>"; }
+        } catch (e) { tb.innerHTML = "<tr><td colspan='3'>Offline</td></tr>"; }
     }
 
     async function simpanKeSheet(tgl) {
         const val = document.getElementById(`sel-${tgl}`).value;
-        if(!val) return alert("Pilih status!");
+        if(!val) return;
         const btn = event.target;
-        btn.innerText = "...";
+        btn.innerText = "􀀁"; 
         
-        // Kirim data via URL Search Params agar lebih stabil di Google Apps Script
         const url = `${WEB_APP_URL}?tanggal=${encodeURIComponent(tgl)}&status=${encodeURIComponent(val)}&sheetName=${encodeURIComponent(sheetSekarang)}`;
 
         try {
             await fetch(url, { method: 'POST', mode: 'no-cors' });
-            alert("Berhasil disimpan!");
+            alert("✅ iCloud Berhasil Sinkron!");
             btn.innerText = "OK";
-        } catch (e) { 
-            alert("Gagal koneksi!"); 
-            btn.innerText = "OK";
-        }
+        } catch (e) { alert("Sync Error!"); btn.innerText = "OK"; }
     }
 
     function jalankanFilter() {
