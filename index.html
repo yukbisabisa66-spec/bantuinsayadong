@@ -6,84 +6,68 @@
     <title>ATM Monitor Pro - Bankaltimtara</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { min-height: 100vh; display: flex; justify-content: center; align-items: center; background: #004e92; color: white; padding: 20px; }
-        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); padding: 25px; border-radius: 25px; border: 1px solid white; width: 100%; max-width: 550px; }
+        body { min-height: 100vh; display: flex; justify-content: center; align-items: center; background: #004e92; color: white; padding: 15px; }
+        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); padding: 20px; border-radius: 25px; border: 1px solid white; width: 100%; max-width: 600px; }
         
-        /* Gaya Toggle Filter */
-        .filter-container { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #facc15; }
-        input:checked + .slider:before { transform: translateX(26px); }
-
-        /* Tabel & Gaya Data */
-        .table-area { background: white; color: black; border-radius: 15px; margin-top: 15px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 400px; }
-        th { background: #facc15; color: #004e92; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
+        .filter-area { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+        .table-area { background: white; color: black; border-radius: 15px; overflow-x: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th { background: #facc15; color: #004e92; padding: 10px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
         
-        .row-hidden { display: none !important; } /* Class untuk menyembunyikan baris */
-        .warning { background: #ffebee; }
+        .warning { background: #ffebee !important; }
         .no-selisih { color: #2e7d32; font-weight: bold; }
         .ada-selisih { color: #d32f2f; font-weight: bold; }
-        
-        .btn-aksi { padding: 5px 10px; border-radius: 5px; text-decoration: none; font-size: 10px; font-weight: bold; display: inline-block; text-align: center; }
-        .btn-done { background: #4caf50; color: white; }
-        .btn-isi { background: #004e92; color: white; }
-        
-        .hidden { display: none; }
-        .btn-back { width: 100%; margin-top: 15px; padding: 12px; background: white; color: #004e92; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        .row-hidden { display: none !important; }
+
+        select { padding: 4px; border-radius: 4px; font-size: 10px; }
+        .btn-save { background: #004e92; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-menu { width: 100%; margin-top: 10px; padding: 12px; background: white; color: #004e92; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="glass-card">
     <div id="menu">
-        <h2 style="text-align:center; color:#facc15; margin-bottom:20px;">ATM Monitoring System</h2>
-        <button class="btn-back" onclick="muatData('Gersik', '0')">UNIT GERSIK</button>
-        <button class="btn-back" onclick="muatData('Maridan', '1565950302')">UNIT MARIDAN</button>
+        <h2 style="text-align:center; color:#facc15; margin-bottom:15px;">Dashboard ATM</h2>
+        <button class="btn-menu" onclick="muatData('Gersik', '0')">UNIT GERSIK</button>
+        <button class="btn-menu" onclick="muatData('Maridan', '1565950302')">UNIT MARIDAN</button>
     </div>
 
-    <div id="detail" class="hidden">
-        <h3 id="unit-nama" style="color:#facc15; text-align:center; margin-bottom:15px;"></h3>
+    <div id="detail" style="display:none;">
+        <h3 id="unit-nama" style="color:#facc15; text-align:center; margin-bottom:10px;"></h3>
         
-        <div class="filter-container">
-            <span style="font-size: 13px; font-weight: bold;">Hanya Tampilkan Selisih ⚠️</span>
-            <label class="switch">
-                <input type="checkbox" id="toggleFilter" onchange="filterSelisih()">
-                <span class="slider"></span>
-            </label>
+        <div class="filter-area">
+            <span>⚠️ Hanya Selisih & Belum Done</span>
+            <input type="checkbox" id="toggleFilter" onchange="jalankanFilter()">
         </div>
 
         <div class="table-area">
             <table>
-                <thead>
-                    <tr><th>Tgl</th><th>Selisih</th><th>Status/Aksi</th></tr>
-                </thead>
+                <thead><tr><th>Tgl</th><th>Selisih</th><th>Aksi Status</th></tr></thead>
                 <tbody id="isi-tabel"></tbody>
             </table>
         </div>
-        <button class="btn-back" onclick="location.reload()">KEMBALI</button>
+        <button class="btn-menu" onclick="location.reload()">KEMBALI</button>
     </div>
 </div>
 
 <script>
     const SSID = "1rFuTdUTSuUeQQAZDB7QPngRvDwkTh34ZtrUxYo9Zu7U";
-    const LINK_SHEET = "https://docs.google.com/spreadsheets/d/" + SSID;
+    // MASUKKAN URL YANG KAMU DAPAT SETELAH KLIK "TERAPKAN" DI SINI
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw0XNO14T6ZtEO5td5ylJSs3gEQdFY4zdmHfCwO728PxUf5OLaDp5EJ5yN4GShIBia7Hw/exec";
+    let sheetSekarang = "";
 
     async function muatData(nama, gid) {
-        document.getElementById('menu').classList.add('hidden');
-        document.getElementById('detail').classList.remove('hidden');
+        sheetSekarang = nama;
+        document.getElementById('menu').style.display = 'none';
+        document.getElementById('detail').style.display = 'block';
         document.getElementById('unit-nama').innerText = "Unit: " + nama;
         const tb = document.getElementById('isi-tabel');
-        tb.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:20px;'>Memuat data...</td></tr>";
-
-        const url = `https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`;
+        tb.innerHTML = "<tr><td colspan='3' style='text-align:center;'>Memuat data...</td></tr>";
 
         try {
-            const res = await fetch(url);
+            const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`);
             const text = await res.text();
             const lines = text.split('\n').slice(1);
             tb.innerHTML = "";
@@ -91,54 +75,54 @@
             lines.forEach(line => {
                 const col = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, "").trim());
                 const tgl = col[1];
-                const selRaw = col[2];
+                const sel = col[2];
                 const ket = (col[3] || "").toUpperCase();
 
                 if (tgl && tgl !== "null") {
-                    let teksSelisih, kelasSelisih, tombolAksi, isProblem = false;
+                    const isNoSelisih = (sel === "-" || sel === "0" || sel === "");
+                    const isProblem = (!isNoSelisih && ket !== "DONE");
                     
-                    // Cek Selisih
-                    if (selRaw === "-" || selRaw === "0" || selRaw === "") {
-                        teksSelisih = "Tidak Ada Selisih";
-                        kelasSelisih = "no-selisih";
-                        tombolAksi = `<span class="btn-aksi btn-done">✅ AMAN</span>`;
-                    } else {
-                        teksSelisih = "Rp " + selRaw;
-                        kelasSelisih = "ada-selisih";
-                        if (ket !== "DONE") {
-                            isProblem = true; // Tandai baris yang bermasalah
-                            tombolAksi = `<a href="${LINK_SHEET}" target="_blank" class="btn-aksi btn-isi">ISI KET</a>`;
-                        } else {
-                            tombolAksi = `<span class="btn-aksi btn-done">DONE</span>`;
-                        }
-                    }
-
-                    // Tambahkan atribut data-problem untuk filter toggle nanti
                     tb.innerHTML += `
                         <tr class="${isProblem ? 'warning problem-row' : 'safe-row'}">
                             <td>${tgl}</td>
-                            <td class="${kelasSelisih}">${teksSelisih}</td>
-                            <td style="text-align:center;">${tombolAksi}</td>
+                            <td class="${isNoSelisih ? 'no-selisih' : 'ada-selisih'}">${isNoSelisih ? 'Tidak Ada Selisih' : 'Rp '+sel}</td>
+                            <td>
+                                <select id="sel-${tgl}">
+                                    <option value="" ${ket==""?'selected':''}>-</option>
+                                    <option value="DONE" ${ket=="DONE"?'selected':''}>DONE</option>
+                                    <option value="PROSES" ${ket=="PROSES"?'selected':''}>PROSES</option>
+                                </select>
+                                <button class="btn-save" onclick="simpanKeSheet('${tgl}')">Ok</button>
+                            </td>
                         </tr>`;
                 }
             });
-        } catch (e) {
-            tb.innerHTML = "<tr><td colspan='3'>Koneksi gagal.</td></tr>";
-        }
+        } catch (e) { tb.innerHTML = "<tr><td colspan='3'>Error Koneksi</td></tr>"; }
     }
 
-    // FUNGSI UNTUK TOGGLE FILTER
-    function filterSelisih() {
-        const isChecked = document.getElementById('toggleFilter').checked;
-        const safeRows = document.querySelectorAll('.safe-row');
+    async function simpanKeSheet(tgl) {
+        const val = document.getElementById(`sel-${tgl}`).value;
+        if(!val) return alert("Pilih status!");
         
-        safeRows.forEach(row => {
-            if (isChecked) {
-                row.classList.add('row-hidden'); // Sembunyikan baris aman
-            } else {
-                row.classList.remove('row-hidden'); // Tampilkan semua
-            }
-        });
+        const btn = event.target;
+        btn.innerText = "...";
+        
+        const fd = new FormData();
+        fd.append('tanggal', tgl);
+        fd.append('status', val);
+        fd.append('sheetName', sheetSekarang);
+
+        try {
+            // Kirim data ke Apps Script
+            await fetch(WEB_APP_URL, { method: 'POST', body: fd, mode: 'no-cors' });
+            alert("Berhasil disimpan!");
+            btn.innerText = "Ok";
+        } catch (e) { alert("Gagal!"); btn.innerText = "Ok"; }
+    }
+
+    function jalankanFilter() {
+        const cek = document.getElementById('toggleFilter').checked;
+        document.querySelectorAll('.safe-row').forEach(r => r.style.display = cek ? 'none' : 'table-row');
     }
 </script>
 </body>
