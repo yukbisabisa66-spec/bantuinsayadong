@@ -1,108 +1,177 @@
-:root {
-    /* Identitas Bankaltimtara Premium */
-    --ios-bg: #003366; 
-    --glass-bg: rgba(0, 51, 102, 0.4); /* Biru Transparan */
-    --glass-border: rgba(255, 215, 0, 0.3); /* Border Kuning Halus */
-    --accent-blue: #007AFF;
-    --accent-yellow: #FACC15; /* Kuning Cerah Bankaltimtara */
-    --accent-red: #FF453A;
-    --accent-green: #32D74B;
-    --text-main: #FFFFFF;
-}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ATM Monitor - Bankaltimtara iOS 26</title>
+    <style>
+        :root {
+            --ios-bg: #003366; 
+            --glass-bg: rgba(0, 51, 102, 0.4); 
+            --glass-border: rgba(255, 215, 0, 0.3); 
+            --accent-yellow: #FACC15; 
+            --accent-red: #FF453A;
+            --accent-green: #32D74B;
+        }
 
-* { 
-    margin: 0; padding: 0; box-sizing: border-box; 
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-    -webkit-tap-highlight-color: transparent;
-}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
+        body { 
+            min-height: 100vh; 
+            background: linear-gradient(135deg, #003366 0%, #004e92 50%, #facc15 150%);
+            background-attachment: fixed;
+            display: flex; justify-content: center; align-items: center; 
+            color: white; padding: 15px;
+        }
 
-body { 
-    min-height: 100vh; 
-    /* Gradient Biru ke arah Kuning Deep */
-    background: linear-gradient(135deg, #003366 0%, #004e92 50%, #facc15 150%);
-    background-attachment: fixed;
-    display: flex; justify-content: center; align-items: center; 
-    color: var(--text-main);
-    overflow-x: hidden;
-}
+        .glass-card { 
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px) saturate(150%);
+            -webkit-backdrop-filter: blur(30px) saturate(150%);
+            padding: 24px; border-radius: 40px; 
+            border: 1px solid var(--glass-border);
+            width: 100%; max-width: 420px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        }
 
-/* Glass Card Utama */
-.glass-card { 
-    background: var(--glass-bg);
-    backdrop-filter: blur(30px) saturate(150%);
-    -webkit-backdrop-filter: blur(30px) saturate(150%);
-    padding: 24px; 
-    border-radius: 40px; 
-    border: 1px solid var(--glass-border);
-    width: 92%; 
-    max-width: 420px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
-}
+        h2 { font-weight: 700; color: var(--accent-yellow); margin-bottom: 24px; text-align: center; }
 
-h2 { 
-    font-weight: 700; font-size: 26px; color: var(--accent-yellow);
-    margin-bottom: 24px; text-align: center;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-}
+        .btn-menu { 
+            width: 100%; margin-bottom: 12px; padding: 18px; 
+            background: rgba(255, 255, 255, 0.1); 
+            color: white; border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 20px; font-weight: 600; cursor: pointer;
+        }
 
-/* Button Menu (List Gaya iOS) */
-.btn-menu { 
-    width: 100%; margin-bottom: 12px; padding: 18px 24px; 
-    background: rgba(255, 255, 255, 0.1); 
-    color: white; border: 1px solid rgba(255, 255, 255, 0.1); 
-    border-radius: 20px; 
-    font-weight: 600; font-size: 16px;
-    cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex; justify-content: space-between; align-items: center;
-}
+        .filter-area { 
+            background: rgba(250, 204, 21, 0.1); padding: 14px; 
+            border-radius: 18px; margin-bottom: 15px; display: flex; 
+            justify-content: space-between; align-items: center; 
+            border: 0.5px solid var(--glass-border);
+        }
 
-.btn-menu:active { transform: scale(0.97); background: var(--accent-yellow); color: #003366; }
+        .table-container { background: rgba(0, 0, 0, 0.2); border-radius: 20px; overflow: hidden; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: rgba(250, 204, 21, 0.2); padding: 12px; color: var(--accent-yellow); }
+        td { padding: 12px; border-bottom: 0.5px solid rgba(255, 255, 255, 0.05); text-align: center; }
 
-/* Table View */
-.filter-area { 
-    background: rgba(250, 204, 21, 0.1); /* Kuning tipis */
-    padding: 14px 18px; border-radius: 18px; 
-    margin-bottom: 15px; display: flex; 
-    justify-content: space-between; align-items: center; 
-    border: 0.5px solid var(--glass-border);
-}
+        .warning { background: rgba(255, 69, 58, 0.15) !important; }
+        .no-selisih { color: var(--accent-green); font-weight: bold; }
+        .ada-selisih { color: var(--accent-red); font-weight: bold; }
+        .row-hidden { display: none !important; }
 
-.table-container {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px; overflow: hidden;
-    margin-bottom: 15px;
-    border: 0.5px solid rgba(255, 255, 255, 0.1);
-}
+        select { background: white; color: #003366; border: none; padding: 6px; border-radius: 8px; font-weight: bold; }
+        .btn-save { background: var(--accent-yellow); color: #003366; border: none; padding: 7px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        
+        .btn-back { background: transparent; border: 1.5px solid var(--accent-yellow); border-radius: 18px; padding: 12px; width: 100%; color: var(--accent-yellow); font-weight: 700; cursor: pointer; }
 
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { background: rgba(250, 204, 21, 0.2); padding: 12px; color: var(--accent-yellow); font-weight: 600; }
-td { padding: 12px; border-bottom: 0.5px solid rgba(255, 255, 255, 0.05); }
+        /* iOS Switch */
+        .switch { position: relative; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 2px; bottom: 2px; background: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background: var(--accent-yellow); }
+        input:checked + .slider:before { transform: translateX(24px); background: #003366; }
+    </style>
+</head>
+<body>
 
-.warning { background: rgba(255, 69, 58, 0.12) !important; }
-.no-selisih { color: var(--accent-green); font-weight: 600; }
-.ada-selisih { color: var(--accent-red); font-weight: 800; }
+<div class="glass-card">
+    <div id="menu">
+        <h2>Bankaltimtara 🏦</h2>
+        <button class="btn-menu" onclick="muatData('Gersik', '0')">Unit Gersik</button>
+        <button class="btn-menu" onclick="muatData('Maridan', '1565950302')">Unit Maridan</button>
+    </div>
 
-/* Control Elements */
-select { 
-    background: #FFFFFF; color: #003366; border: none; 
-    padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 600;
-}
+    <div id="detail" style="display:none;">
+        <h3 id="unit-nama" style="text-align:center; margin-bottom:15px; color: var(--accent-yellow);"></h3>
+        <div class="filter-area">
+            <span style="font-size: 12px;">Hanya Tampilkan Selisih</span>
+            <label class="switch">
+                <input type="checkbox" id="toggleFilter" onchange="jalankanFilter()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead><tr><th>Tgl</th><th>Selisih</th><th>Status</th></tr></thead>
+                <tbody id="isi-tabel"></tbody>
+            </table>
+        </div>
+        <button class="btn-back" onclick="location.reload()">Kembali</button>
+    </div>
+</div>
 
-.btn-save { 
-    background: var(--accent-yellow); color: #003366; 
-    border: none; padding: 7px 14px; border-radius: 8px; 
-    font-weight: 700; cursor: pointer; transition: 0.2s;
-}
+<script>
+    const SSID = "1rFuTdUTSuUeQQAZDB7QPngRvDwkTh34ZtrUxYo9Zu7U";
+    // PASTI KAN URL INI ADALAH URL DEPLOYMENT TERBARU (ENDINGNYA /exec)
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzYIPo4ew3ggxHruF0kg9H0XX9nkrSnFqdDzCY_DMTCk4xdFT6VVWqslh3QtAtf2z8HKg/exec";
+    let sheetSekarang = "";
 
-.btn-save:hover { background: #FFFFFF; }
+    async function muatData(nama, gid) {
+        sheetSekarang = nama;
+        document.getElementById('menu').style.display = 'none';
+        document.getElementById('detail').style.display = 'block';
+        document.getElementById('unit-nama').innerText = "ATM " + nama;
+        const tb = document.getElementById('isi-tabel');
+        tb.innerHTML = "<tr><td colspan='3' style='padding:20px'>Memuat...</td></tr>";
 
-.btn-back {
-    background: transparent; border: 1.5px solid var(--accent-yellow);
-    border-radius: 18px; padding: 12px;
-    width: 100%; color: var(--accent-yellow);
-    font-weight: 700; cursor: pointer; margin-top: 10px;
-}
+        try {
+            const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`);
+            const text = await res.text();
+            const lines = text.split('\n').slice(1);
+            tb.innerHTML = "";
 
-/* Switch */
-input:checked + .slider { background-color: var(--accent-yellow); }
-input:checked + .slider:before { background-color: #003366; }
+            lines.forEach(line => {
+                const col = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, "").trim());
+                const tgl = col[1];
+                const sel = col[2];
+                const ket = (col[3] || "").toUpperCase();
+
+                if (tgl && tgl !== "null") {
+                    const isNoSelisih = (sel === "-" || sel === "0" || sel === "");
+                    const isProblem = (!isNoSelisih && ket !== "DONE");
+                    
+                    tb.innerHTML += `
+                        <tr class="${isProblem ? 'warning problem-row' : 'safe-row'}">
+                            <td style="opacity:0.7">${tgl}</td>
+                            <td class="${isNoSelisih ? 'no-selisih' : 'ada-selisih'}">${isNoSelisih ? 'Aman' : 'Rp '+sel}</td>
+                            <td>
+                                <select id="sel-${tgl}">
+                                    <option value="" ${ket==""?'selected':''}>-</option>
+                                    <option value="DONE" ${ket=="DONE"?'selected':''}>DONE</option>
+                                    <option value="PROSES" ${ket=="PROSES"?'selected':''}>PROSES</option>
+                                </select>
+                                <button class="btn-save" onclick="simpanKeSheet('${tgl}')">OK</button>
+                            </td>
+                        </tr>`;
+                }
+            });
+        } catch (e) { tb.innerHTML = "<tr><td colspan='3'>Error Koneksi</td></tr>"; }
+    }
+
+    async function simpanKeSheet(tgl) {
+        const val = document.getElementById(`sel-${tgl}`).value;
+        if(!val) return alert("Pilih status!");
+        const btn = event.target;
+        btn.innerText = "...";
+        
+        // Kirim data via URL Search Params agar lebih stabil di Google Apps Script
+        const url = `${WEB_APP_URL}?tanggal=${encodeURIComponent(tgl)}&status=${encodeURIComponent(val)}&sheetName=${encodeURIComponent(sheetSekarang)}`;
+
+        try {
+            await fetch(url, { method: 'POST', mode: 'no-cors' });
+            alert("Berhasil disimpan!");
+            btn.innerText = "OK";
+        } catch (e) { 
+            alert("Gagal koneksi!"); 
+            btn.innerText = "OK";
+        }
+    }
+
+    function jalankanFilter() {
+        const cek = document.getElementById('toggleFilter').checked;
+        document.querySelectorAll('.safe-row').forEach(r => r.classList.toggle('row-hidden', cek));
+    }
+</script>
+</body>
+</html>
