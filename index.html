@@ -37,29 +37,26 @@
             margin-top: 20px;
         }
 
-        /* --- SCREEN LOGIN --- */
         #login-screen { text-align: center; margin-top: 10vh; }
         .pin-input {
             width: 100%; padding: 15px; border-radius: 15px; border: none; margin: 20px 0;
             background: rgba(255,255,255,0.2); color: white; text-align: center; font-size: 24px; letter-spacing: 10px;
         }
 
-        /* --- DASHBOARD --- */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .stat-card { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
         .stat-card small { font-size: 11px; opacity: 0.7; display: block; margin-bottom: 5px; }
         .stat-card b { font-size: 20px; color: var(--accent); }
 
-        /* --- TABEL DETAIL --- */
         .table-container { background: rgba(0,0,0,0.2); border-radius: 20px; overflow: hidden; margin-top: 15px; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
         th { background: rgba(250, 204, 21, 0.2); padding: 12px; color: var(--accent); }
         td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
         
         .btn-action { 
-            width: 100%; padding: 15px; background: rgba(255,255,255,0.1); 
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; color: white;
+            width: 100%; padding: 18px; background: rgba(255,255,255,0.1); 
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: white;
             font-weight: 600; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
         }
         
@@ -68,7 +65,9 @@
         .btn-back { background: transparent; border: 1px solid var(--accent); color: var(--accent); width: 100%; padding: 12px; border-radius: 15px; margin-top: 15px; cursor: pointer; }
 
         .hidden { display: none !important; }
-        canvas { margin-bottom: 20px; }
+        canvas { margin-bottom: 20px; max-height: 200px; }
+        
+        select { background: #fff; border-radius: 5px; padding: 2px; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -95,7 +94,7 @@
         <div class="stat-card"><small>TOTAL SELISIH</small><b id="total-pending" style="color: var(--red);">0</b></div>
     </div>
 
-    <canvas id="statChart" width="400" height="200"></canvas>
+    <canvas id="statChart"></canvas>
 
     <div id="unit-buttons">
         <button class="btn-action" onclick="muatData('Gersik', '0')">
@@ -106,7 +105,7 @@
         </button>
     </div>
     
-    <p onclick="location.reload()" style="text-align:center; margin-top:20px; font-size:12px; opacity:0.5; cursor:pointer;">Keluar / Logout</p>
+    <p onclick="location.reload()" style="text-align:center; margin-top:20px; font-size:12px; opacity:0.5; cursor:pointer;">Logout / Keluar</p>
 </div>
 
 <div id="detail-unit" class="glass-card hidden">
@@ -119,16 +118,17 @@
             <tbody id="tabel-body"></tbody>
         </table>
     </div>
-    <button class="btn-back" onclick="backToMenu()">⬅ KEMBALI KE MENU</button>
+    <button class="btn-back" onclick="backToMenu()">⬅ KEMBALI</button>
 </div>
 
 <script>
     const PUB_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRb6GSybyMkKf6JkokVF42Q-nIca3R6yuEGkbSwcgfF8qZbp8J293LHtXGKGB7VVA/pub?output=csv";
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw0XNO14T6ZtEO5td5ylJSs3gEQdFY4zdmHfCwO728PxUf5OLaDp5EJ5yN4GShIBia7Hw/exec";
-    const PASSCODE = "1234"; // Ganti passcode di sini
+    const PASSCODE = "1234";
 
     let globalStats = { done: 0, pending: 0 };
     let activeSheet = "";
+    let myChartInstance = null;
 
     function checkLogin() {
         if(document.getElementById('passcode').value === PASSCODE) {
@@ -137,42 +137,43 @@
             initDashboard();
         } else {
             alert("Passcode Salah!");
+            document.getElementById('passcode').value = "";
         }
     }
 
     function toggleTheme() { document.body.classList.toggle('dark-mode'); }
 
     async function initDashboard() {
-        // Set Greeting
         const jam = new Date().getHours();
         let salam = jam < 11 ? "Selamat Pagi," : jam < 15 ? "Selamat Siang," : jam < 19 ? "Selamat Sore," : "Selamat Malam,";
         document.getElementById('greeting').innerText = salam;
 
-        // Reset Stats
         globalStats = { done: 0, pending: 0 };
         const units = [{ n: 'Gersik', g: '0' }, { n: 'Maridan', g: '1565950302' }];
 
         for (let u of units) {
-            const res = await fetch(`${PUB_URL}&gid=${u.g}&t=${Date.now()}`);
-            const text = await res.text();
-            const rows = text.split('\n').slice(1);
-            
-            let hasUnresolved = false;
-            rows.forEach(row => {
-                const col = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                if(col.length >= 4) {
-                    const selVal = col[2].replace(/"/g, "").trim();
-                    const ketVal = col[3].replace(/"/g, "").toUpperCase().trim();
-                    if(selVal && selVal !== "0" && selVal !== "-") {
-                        if(ketVal === "DONE") globalStats.done++;
-                        else {
-                            globalStats.pending++;
-                            hasUnresolved = true;
+            try {
+                const res = await fetch(`${PUB_URL}&gid=${u.g}&t=${Date.now()}`);
+                const text = await res.text();
+                const rows = text.split('\n').slice(1);
+                
+                let hasUnresolved = false;
+                rows.forEach(row => {
+                    const col = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if(col.length >= 4) {
+                        const selVal = col[2].replace(/"/g, "").trim();
+                        const ketVal = col[3].replace(/"/g, "").toUpperCase().trim();
+                        if(selVal && selVal !== "0" && selVal !== "-") {
+                            if(ketVal === "DONE") globalStats.done++;
+                            else {
+                                globalStats.pending++;
+                                hasUnresolved = true;
+                            }
                         }
                     }
-                }
-            });
-            if(hasUnresolved) document.getElementById('dot-'+u.n).style.display = 'block';
+                });
+                document.getElementById('dot-'+u.n).style.display = hasUnresolved ? 'block' : 'none';
+            } catch (e) { console.error("Error fetching " + u.n); }
         }
         
         document.getElementById('total-done').innerText = globalStats.done;
@@ -182,17 +183,26 @@
 
     function renderChart() {
         const ctx = document.getElementById('statChart').getContext('2d');
-        new Chart(ctx, {
+        if (myChartInstance) { myChartInstance.destroy(); }
+
+        const isGreenFull = globalStats.pending === 0;
+        const dataArr = isGreenFull ? [1, 0] : [globalStats.done, globalStats.pending];
+        const colorArr = isGreenFull ? [ '#32D74B', '#32D74B' ] : [ '#32D74B', '#FF453A' ];
+
+        myChartInstance = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['Selesai', 'Selisih'],
                 datasets: [{
-                    data: [globalStats.done, globalStats.pending],
-                    backgroundColor: ['#32D74B', '#FF453A'],
+                    data: dataArr,
+                    backgroundColor: colorArr,
                     borderWidth: 0
                 }]
             },
-            options: { cutout: '80%', plugins: { legend: { labels: { color: 'white' } } } }
+            options: { 
+                cutout: '80%', 
+                plugins: { legend: { labels: { color: 'white' } } } 
+            }
         });
     }
 
@@ -205,39 +215,47 @@
         const tb = document.getElementById('tabel-body');
         tb.innerHTML = "<tr><td colspan='3'>Memuat data...</td></tr>";
 
-        const res = await fetch(`${PUB_URL}&gid=${gid}&t=${Date.now()}`);
-        const text = await res.text();
-        const rows = text.split('\n').slice(1);
-        tb.innerHTML = "";
+        try {
+            const res = await fetch(`${PUB_URL}&gid=${gid}&t=${Date.now()}`);
+            const text = await res.text();
+            const rows = text.split('\n').slice(1);
+            tb.innerHTML = "";
 
-        rows.forEach(row => {
-            const col = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, ""));
-            if(col[1]) {
-                const isProblem = (col[2] && col[2] !== "0" && col[2] !== "-" && col[3].toUpperCase() !== "DONE");
-                tb.innerHTML += `
-                    <tr style="background: ${isProblem ? 'rgba(255,69,58,0.1)' : 'transparent'}">
-                        <td>${col[1]}</td>
-                        <td style="color:${isProblem ? 'var(--red)' : 'var(--green)'}">${col[2] === "0" || !col[2] ? 'Aman' : 'Rp '+col[2]}</td>
-                        <td>
-                            <select id="stat-${col[1]}">
-                                <option value="DONE" ${col[3].toUpperCase()==='DONE'?'selected':''}>DONE</option>
-                                <option value="PROSES" ${col[3].toUpperCase()==='PROSES'?'selected':''}>PROSES</option>
-                            </select>
-                            <button class="btn-ok" onclick="updateStatus('${col[1]}')">OK</button>
-                        </td>
-                    </tr>`;
-            }
-        });
+            rows.forEach(row => {
+                const col = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, ""));
+                if(col[1]) {
+                    const isProblem = (col[2] && col[2] !== "0" && col[2] !== "-" && col[3].toUpperCase() !== "DONE");
+                    tb.innerHTML += `
+                        <tr style="background: ${isProblem ? 'rgba(255,69,58,0.1)' : 'transparent'}">
+                            <td>${col[1]}</td>
+                            <td style="color:${isProblem ? 'var(--red)' : 'var(--green)'}">${col[2] === "0" || !col[2] ? 'Aman' : 'Rp '+col[2]}</td>
+                            <td>
+                                <select id="stat-${col[1]}">
+                                    <option value="DONE" ${col[3].toUpperCase()==='DONE'?'selected':''}>DONE</option>
+                                    <option value="PROSES" ${col[3].toUpperCase()==='PROSES'?'selected':''}>PROSES</option>
+                                </select>
+                                <button class="btn-ok" onclick="updateStatus('${col[1]}')">OK</button>
+                            </td>
+                        </tr>`;
+                }
+            });
+        } catch (e) { tb.innerHTML = "<tr><td colspan='3'>Gagal memuat data</td></tr>"; }
     }
 
     async function updateStatus(tgl) {
         const stat = document.getElementById(`stat-${tgl}`).value;
+        const btn = event.target;
+        btn.innerText = "...";
         const url = `${WEB_APP_URL}?tanggal=${encodeURIComponent(tgl)}&status=${encodeURIComponent(stat)}&sheetName=${encodeURIComponent(activeSheet)}`;
         
-        alert("Mengirim data...");
-        await fetch(url, { method: 'POST', mode: 'no-cors' });
-        alert("Berhasil diperbarui!");
-        location.reload();
+        try {
+            await fetch(url, { method: 'POST', mode: 'no-cors' });
+            alert("Berhasil!");
+            location.reload();
+        } catch (e) {
+            alert("Gagal memperbarui");
+            btn.innerText = "OK";
+        }
     }
 
     function backToMenu() {
