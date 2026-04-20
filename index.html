@@ -3,227 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ATM Monitor - Bankaltimtara</title>
+    <title>ATM Monitor - Base Locked Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            /* Light Mode (Default) */
-            --bg-gradient: linear-gradient(135deg, #003366 0%, #004e92 100%);
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --text-color: #003366;
-            --glass-border: rgba(0, 51, 102, 0.2);
-            --accent-yellow: #f2bc00; 
-            --accent-red: #FF453A;
-            --accent-green: #32D74B;
-            --btn-bg: rgba(0, 51, 102, 0.05);
+            --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --glass: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.2);
+            --text: #ffffff;
+            --accent: #FACC15;
+            --green: #32D74B;
+            --red: #FF453A;
         }
 
-        [data-theme="dark"] {
-            --bg-gradient: linear-gradient(135deg, #001a33 0%, #000000 100%);
-            --card-bg: rgba(20, 30, 45, 0.85);
-            --text-color: #ffffff;
-            --glass-border: rgba(255, 215, 0, 0.3);
-            --btn-bg: rgba(255, 255, 255, 0.1);
-        }
+        /* DAFTAR TEMA TERKUNCI */
+        [data-theme="liquid-gold"] { --bg: radial-gradient(circle at top right, #453a00, #000); --glass: rgba(250, 204, 21, 0.1); --border: rgba(250, 204, 21, 0.3); --accent: #FACC15; }
+        [data-theme="deep-ocean"] { --bg: linear-gradient(160deg, #001a33 0%, #000000 100%); --glass: rgba(0, 122, 255, 0.1); --border: rgba(0, 122, 255, 0.4); --accent: #007AFF; }
+        [data-theme="sunset-vibes"] { --bg: linear-gradient(135deg, #4c0519 0%, #000000 100%); --glass: rgba(251, 113, 133, 0.1); --border: rgba(251, 113, 133, 0.3); --accent: #fb7185; }
+        [data-theme="emerald-night"] { --bg: linear-gradient(135deg, #064e3b 0%, #000 100%); --glass: rgba(50, 215, 75, 0.05); --border: rgba(50, 215, 75, 0.3); --accent: #32D74B; }
+        [data-theme="midnight-purple"] { --bg: linear-gradient(135deg, #2e1065 0%, #000 100%); --glass: rgba(168, 85, 247, 0.1); --border: rgba(168, 85, 247, 0.3); --accent: #a855f7; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; transition: 0.3s ease; }
-        
-        body { 
-            min-height: 100vh; 
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            display: flex; justify-content: center; align-items: center; padding: 20px; color: var(--text-color);
-        }
-
-        .glass-card { 
-            background: var(--card-bg); backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            padding: 25px; border-radius: 30px; border: 1px solid var(--glass-border);
-            width: 100%; max-width: 800px; /* Lebar otomatis untuk desktop */
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Responsive Desktop */
-        @media (min-width: 768px) {
-            .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-            h2 { font-size: 32px !important; }
-        }
-
-        .header-tools { display: flex; justify-content: flex-end; margin-bottom: 10px; gap: 10px; }
-        
-        .theme-toggle {
-            background: var(--btn-bg); border: 1px solid var(--glass-border);
-            color: var(--text-color); padding: 8px 15px; border-radius: 12px;
-            cursor: pointer; font-size: 12px; font-weight: bold;
-        }
-
-        .banner-notif {
-            background: var(--accent-red); color: white; padding: 12px; border-radius: 15px;
-            margin-bottom: 20px; display: none; font-weight: 700; text-align: center; font-size: 13px;
-        }
-
-        h2 { font-weight: 800; margin-bottom: 25px; text-align: center; font-size: 24px; }
-
-        .btn-menu { 
-            width: 100%; margin-bottom: 12px; padding: 18px; 
-            background: var(--btn-bg); color: var(--text-color); border: 1px solid var(--glass-border); 
-            border-radius: 18px; font-weight: 600; cursor: pointer;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .notif-badge { background: var(--accent-red); color: white; font-size: 10px; padding: 4px 8px; border-radius: 10px; }
-
-        /* Tabel Responsif */
-        .table-container { overflow-x: auto; background: rgba(0,0,0,0.05); border-radius: 15px; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; min-width: 350px; }
-        th { background: var(--accent-yellow); color: #003366; padding: 12px; font-size: 13px; }
-        td { padding: 12px; border-bottom: 1px solid var(--glass-border); font-size: 13px; text-align: center; }
-
-        .warning { background: rgba(255, 69, 58, 0.1) !important; }
-        .btn-save { background: var(--accent-yellow); color: #003366; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-back { background: transparent; border: 1px solid var(--text-color); border-radius: 15px; padding: 12px; width: 100%; color: var(--text-color); margin-top: 15px; cursor: pointer; }
-
-        /* Filter Switch */
-        .filter-box { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--btn-bg); border-radius: 12px; margin-bottom: 10px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; }
+        body { min-height: 100vh; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: flex-start; padding: 20px; transition: all 0.8s ease; }
+        .glass-card { background: var(--glass); backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%); border-radius: 40px; border: 1px solid var(--border); width: 100%; max-width: 450px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); margin-top: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        select.theme-selector { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 15px; font-size: 11px; outline: none; }
+        .stat-box { background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid var(--border); }
+        .btn-ios { width: 100%; padding: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 25px; color: white; font-weight: 600; margin-bottom: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .notif-badge { width: 10px; height: 10px; background: var(--red); border-radius: 50%; box-shadow: 0 0 12px var(--red); }
+        .table-container { background: rgba(0, 0, 0, 0.3); border-radius: 25px; overflow: hidden; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { padding: 15px; background: rgba(255,255,255,0.05); color: var(--accent); }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .hidden { display: none !important; }
+        canvas { margin: 20px 0; max-height: 180px; }
     </style>
 </head>
 <body>
 
-<div class="glass-card">
-    <div class="header-tools">
-        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Dark Mode</button>
-    </div>
-
-    <div id="notif-banner" class="banner-notif">⚠️ PERHATIAN: ADA SELISIH BELUM SELESAI</div>
-
-    <div id="menu">
-        <h2>ATM Monitor 🏦</h2>
-        <div class="menu-grid">
-            <button id="btn-Gersik" class="btn-menu" onclick="muatData('Gersik', '0')">Unit Gersik <span>❯</span></button>
-            <button id="btn-Maridan" class="btn-menu" onclick="muatData('Maridan', '1565950302')">Unit Maridan <span>❯</span></button>
-        </div>
-    </div>
-
-    <div id="detail" style="display:none;">
-        <h3 id="unit-nama" style="text-align:center; margin-bottom:15px;"></h3>
-        
-        <div class="filter-box">
-            <span style="font-size: 12px; font-weight:600;">Tampilkan Selisih Saja</span>
-            <input type="checkbox" id="toggleFilter" onchange="jalankanFilter()" style="width:20px; height:20px; cursor:pointer;">
-        </div>
-
-        <div class="table-container">
-            <table>
-                <thead><tr><th>Tgl</th><th>Selisih</th><th>Status</th><th>Aksi</th></tr></thead>
-                <tbody id="isi-tabel"></tbody>
-            </table>
-        </div>
-        <button class="btn-back" onclick="location.reload()">KEMBALI KE MENU</button>
+<div id="login-screen" class="glass-card">
+    <div style="text-align: center;">
+        <div style="font-size: 60px; margin-bottom: 10px;">🏦</div>
+        <h2 style="margin-bottom: 5px;">Access System</h2>
+        <p style="opacity: 0.5; font-size: 13px; margin-bottom: 25px;">Enter PIN</p>
+        <input type="password" id="passcode" maxlength="4" style="width: 80%; background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: white; text-align: center; padding: 15px; border-radius: 20px; font-size: 24px; letter-spacing: 8px; margin-bottom: 20px;">
+        <button class="btn-ios" style="background: var(--accent); color: black; justify-content: center;" onclick="checkLogin()">UNLOCK</button>
     </div>
 </div>
 
+<div id="main-dashboard" class="glass-card hidden">
+    <div class="header">
+        <div>
+            <p id="greeting" style="font-size: 11px; opacity: 0.6;"></p>
+            <h3 style="color: var(--accent); font-size: 18px;">ATM Monitoring</h3>
+        </div>
+        <select class="theme-selector" onchange="changeTheme(this.value)">
+            <option value="default">Liquid Glass</option>
+            <option value="liquid-gold">Liquid Gold</option>
+            <option value="deep-ocean">Deep Ocean</option>
+            <option value="sunset-vibes">Sunset Vibes</option>
+            <option value="emerald-night">Emerald Night</option>
+            <option value="midnight-purple">Midnight Purple</option>
+        </select>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="stat-box"><small style="opacity:0.6; font-size:9px;">SUDAH PROSES</small><br><b id="total-done">0</b></div>
+        <div class="stat-box"><small style="opacity:0.6; font-size:9px;">BELUM SELESAI</small><br><b id="total-pending" style="color: var(--red);">0</b></div>
+    </div>
+
+    <canvas id="statChart"></canvas>
+
+    <div id="unit-list">
+        <button class="btn-ios" onclick="muatData('Gersik', '0')">Unit Gersik <span id="dot-Gersik" class="notif-badge" style="display:none;"></span></button>
+        <button class="btn-ios" onclick="muatData('Maridan', '1565950302')">Unit Maridan <span id="dot-Maridan" class="notif-badge" style="display:none;"></span></button>
+    </div>
+</div>
+
+<div id="detail-unit" class="glass-card hidden">
+    <h3 id="nama-unit-header" style="text-align:center; color:var(--accent); margin-bottom:20px;"></h3>
+    <div class="table-container">
+        <table>
+            <thead><tr><th>Tgl</th><th>Selisih</th><th>Aksi</th></tr></thead>
+            <tbody id="tabel-body"></tbody>
+        </table>
+    </div>
+    <button class="btn-ios" style="margin-top:20px; border:none; background:transparent; justify-content:center; color:var(--accent);" onclick="backToMenu()">⬅ KEMBALI</button>
+</div>
+
 <script>
-    const SSID = "1rFuTdUTSuUeQQAZDB7QPngRvDwkTh34ZtrUxYo9Zu7U";
+    const PUB_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRb6GSybyMkKf6JkokVF42Q-nIca3R6yuEGkbSwcgfF8qZbp8J293LHtXGKGB7VVA/pub?output=csv";
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzYIPo4ew3ggxHruF0kg9H0XX9nkrSnFqdDzCY_DMTCk4xdFT6VVWqslh3QtAtf2z8HKg/exec";
-    let sheetSekarang = "";
+    const PIN = "1234";
 
-    window.onload = () => {
-        cekSelisihGlobal();
-        if(localStorage.getItem('theme') === 'dark') toggleTheme();
-    };
+    let stats = { done: 0, pending: 0 };
+    let myChart = null;
 
-    function toggleTheme() {
-        const body = document.body;
-        const btn = document.getElementById('themeBtn');
-        if (body.getAttribute('data-theme') === 'dark') {
-            body.removeAttribute('data-theme');
-            btn.innerText = "🌙 Dark Mode";
-            localStorage.setItem('theme', 'light');
-        } else {
-            body.setAttribute('data-theme', 'dark');
-            btn.innerText = "☀️ Light Mode";
-            localStorage.setItem('theme', 'dark');
-        }
+    function checkLogin() {
+        if(document.getElementById('passcode').value === PIN) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-dashboard').classList.remove('hidden');
+            initData();
+        } else { alert("PIN Salah!"); }
     }
 
-    async function cekSelisihGlobal() {
-        const units = [{ n: 'Gersik', g: '0' }, { n: 'Maridan', g: '1565950302' }];
-        let globalDanger = false;
+    function changeTheme(v) { document.body.setAttribute('data-theme', v); }
 
-        for (let u of units) {
+    async function initData() {
+        const jam = new Date().getHours();
+        document.getElementById('greeting').innerText = jam < 11 ? "Selamat Pagi," : jam < 15 ? "Selamat Siang," : jam < 19 ? "Selamat Sore," : "Selamat Malam,";
+        
+        stats = { done: 0, pending: 0 };
+        const units = [{n:'Gersik', g:'0'}, {n:'Maridan', g:'1565950302'}];
+
+        for(let u of units) {
             try {
-                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${u.g}&t=${Date.now()}`);
+                const res = await fetch(`${PUB_URL}&gid=${u.g}&t=${Date.now()}`);
                 const text = await res.text();
-                const lines = text.split('\n').slice(1);
-                let unresolved = lines.some(line => {
-                    const col = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    if (col.length < 4) return false;
-                    const sel = col[2].replace(/"/g, "").trim();
-                    const ket = col[3].replace(/"/g, "").toUpperCase().trim();
-                    return (sel !== "-" && sel !== "0" && sel !== "" && ket !== "DONE");
+                const rows = text.split('\n').slice(1);
+                let hasProblem = false;
+                rows.forEach(r => {
+                    const col = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if(col.length >= 4) {
+                        const sel = col[2].replace(/"/g, "").trim();
+                        const ket = col[3].replace(/"/g, "").toUpperCase().trim();
+                        if(sel && sel !== "0" && sel !== "-") {
+                            if(ket === "DONE") stats.done++;
+                            else { stats.pending++; hasProblem = true; }
+                        }
+                    }
                 });
-
-                if (unresolved) {
-                    globalDanger = true;
-                    document.getElementById('btn-' + u.n).innerHTML = `${u.n} <span class="notif-badge">ADA SELISIH</span>`;
-                }
-            } catch (e) { console.error("Sync Error"); }
+                document.getElementById('dot-'+u.n).style.display = hasProblem ? 'block' : 'none';
+            } catch(e) {}
         }
-        if (globalDanger) document.getElementById('notif-banner').style.display = 'block';
+        document.getElementById('total-done').innerText = stats.done;
+        document.getElementById('total-pending').innerText = stats.pending;
+        updateChart();
+    }
+
+    function updateChart() {
+        const ctx = document.getElementById('statChart').getContext('2d');
+        if(myChart) myChart.destroy();
+        const fullGreen = stats.pending === 0;
+        myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: fullGreen ? [1, 0] : [stats.done, stats.pending],
+                    backgroundColor: fullGreen ? ['#32D74B', '#32D74B'] : ['#32D74B', '#FF453A'],
+                    borderWidth: 0
+                }]
+            },
+            options: { cutout: '85%', plugins: { tooltip: { enabled: !fullGreen } } }
+        });
     }
 
     async function muatData(nama, gid) {
-        sheetSekarang = nama;
-        document.getElementById('menu').style.display = 'none';
-        document.getElementById('detail').style.display = 'block';
-        document.getElementById('unit-nama').innerText = "Unit: " + nama;
-        const tb = document.getElementById('isi-tabel');
-        tb.innerHTML = "<tr><td colspan='4'>Memuat...</td></tr>";
-
-        try {
-            const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`);
-            const text = await res.text();
-            const lines = text.split('\n').slice(1);
-            tb.innerHTML = "";
-
-            lines.forEach(line => {
-                const col = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, "").trim());
-                if (col.length < 2) return;
-                const tgl = col[1], sel = col[2], ket = (col[3] || "").toUpperCase();
-                const isAman = (sel === "-" || sel === "0" || sel === "");
-                const isProblem = (!isAman && ket !== "DONE");
-
-                tb.innerHTML += `
-                    <tr class="${isProblem ? 'warning problem-row' : 'safe-row'}">
-                        <td>${tgl}</td>
-                        <td style="color:${isAman ? 'var(--accent-green)' : 'var(--accent-red)'}; font-weight:bold;">${isAman ? 'Aman' : 'Rp '+sel}</td>
-                        <td>
-                            <select id="sel-${tgl}" style="padding:4px; border-radius:5px;">
-                                <option value="DONE" ${ket=="DONE"?'selected':''}>DONE</option>
-                                <option value="PROSES" ${ket=="PROSES"?'selected':''}>PROSES</option>
-                                <option value="" ${ket==""?'selected':''}>-</option>
-                            </select>
-                        </td>
-                        <td><button class="btn-save" onclick="simpan('${tgl}')">OK</button></td>
-                    </tr>`;
-            });
-        } catch (e) { tb.innerHTML = "<tr><td colspan='4'>Gagal muat data</td></tr>"; }
+        document.getElementById('main-dashboard').classList.add('hidden');
+        document.getElementById('detail-unit').classList.remove('hidden');
+        document.getElementById('nama-unit-header').innerText = "Unit " + nama;
+        const tb = document.getElementById('tabel-body');
+        tb.innerHTML = "<tr><td colspan='3'>Syncing...</td></tr>";
+        const res = await fetch(`${PUB_URL}&gid=${gid}&t=${Date.now()}`);
+        const text = await res.text();
+        const rows = text.split('\n').slice(1);
+        tb.innerHTML = "";
+        rows.forEach(r => {
+            const col = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, ""));
+            if(col[1]) {
+                const isProblem = (col[2] && col[2] !== "0" && col[2] !== "-" && col[3].toUpperCase() !== "DONE");
+                tb.innerHTML += `<tr style="background:${isProblem ? 'rgba(255,69,58,0.1)' : ''}">
+                    <td>${col[1]}</td>
+                    <td style="color:${isProblem ? 'var(--red)' : 'var(--green)'}">${!col[2] || col[2]=="0" ? 'OK' : 'Rp '+col[2]}</td>
+                    <td><button onclick="updateStatus('${col[1]}', '${nama}')" style="background:var(--accent); border:none; padding:5px 10px; border-radius:8px; font-weight:bold; cursor:pointer;">OK</button></td>
+                </tr>`;
+            }
+        });
     }
 
-    async function simpan(tgl) {
-        const val = document.getElementById(`sel-${tgl}`).value;
-        const btn = event.target;
-        btn.innerText = "...";
-        const url = `${WEB_APP_URL}?tanggal=${encodeURIComponent(tgl)}&status=${encodeURIComponent(val)}&sheetName=${encodeURIComponent(sheetSekarang)}`;
-        try {
-            await fetch(url, { method: 'POST', mode: 'no-cors' });
-            alert("Berhasil!");
-            location.reload();
-        } catch (e) { alert("Gagal!"); btn.innerText = "OK"; }
+    async function updateStatus(tgl, sheet) {
+        const url = `${WEB_APP_URL}?tanggal=${encodeURIComponent(tgl)}&status=DONE&sheetName=${encodeURIComponent(sheet)}`;
+        await fetch(url, { method: 'POST', mode: 'no-cors' });
+        location.reload();
     }
 
-    function jalankanFilter() {
-        const cek = document.getElementById('toggleFilter').checked;
-        document.querySelectorAll('.safe-row').forEach(r => r.style.display = cek ? 'none' : 'table-row');
+    function backToMenu() {
+        document.getElementById('detail-unit').classList.add('hidden');
+        document.getElementById('main-dashboard').classList.remove('hidden');
     }
 </script>
 </body>
