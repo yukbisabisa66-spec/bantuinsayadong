@@ -3,58 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATM Cashman Monitor</title>
+    <title>ATM Monitor - Bankaltimtara</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { height: 100vh; display: flex; justify-content: center; align-items: center; background: #004e92; color: white; }
-        .glass-card { background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 25px; border: 1px solid white; width: 90%; max-width: 450px; text-align: center; }
-        .btn-unit { background: #facc15; color: #004e92; padding: 15px; border-radius: 15px; border: none; width: 100%; margin-top: 10px; font-weight: bold; cursor: pointer; position: relative; }
-        .notif-badge { position: absolute; top: -5px; right: -5px; background: red; color: white; font-size: 10px; padding: 4px 8px; border-radius: 10px; animation: blink 1s infinite; }
-        .table-area { background: white; color: black; border-radius: 15px; margin-top: 15px; max-height: 300px; overflow-y: auto; }
+        body { min-height: 100vh; display: flex; justify-content: center; align-items: center; background: #004e92; color: white; padding: 20px; }
+        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); padding: 25px; border-radius: 25px; border: 1px solid white; width: 100%; max-width: 500px; }
+        
+        /* Gaya Baris Tabel */
+        .table-area { background: white; color: black; border-radius: 15px; margin-top: 15px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
-        .warning { background: #ffebeb; color: #d00000; font-weight: bold; }
+        th { background: #facc15; color: #004e92; padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        
+        /* Status Warna */
+        .warning { background: #ffebee; }
+        .no-selisih { color: #2e7d32; font-weight: bold; }
+        .ada-selisih { color: #d32f2f; font-weight: bold; }
+        
+        /* Tombol Aksi */
+        .btn-aksi { padding: 5px 10px; border-radius: 5px; border: none; font-size: 10px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+        .btn-done { background: #4caf50; color: white; }
+        .btn-proses { background: #facc15; color: #004e92; }
+        .btn-isi { background: #004e92; color: white; }
+        
         .hidden { display: none; }
-        @keyframes blink { 50% { opacity: 0; } }
+        .btn-back { width: 100%; margin-top: 15px; padding: 12px; background: white; color: #004e92; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="glass-card">
     <div id="menu">
-        <h2 style="color:#facc15">Dashboard ATM</h2>
-        <button class="btn-unit" onclick="muatData('Gersik', '0')">
-            UNIT GERSIK <span id="badge-0" class="notif-badge hidden">!</span>
-        </button>
-        <button class="btn-unit" onclick="muatData('Maridan', '1565950302')">
-            UNIT MARIDAN <span id="badge-1565950302" class="notif-badge hidden">!</span>
-        </button>
+        <h2 style="text-align:center; color:#facc15; margin-bottom:20px;">Monitoring ATM</h2>
+        <button class="btn-back" onclick="muatData('Gersik', '0')">UNIT GERSIK</button>
+        <button class="btn-back" onclick="muatData('Maridan', '1565950302')">UNIT MARIDAN</button>
     </div>
 
     <div id="detail" class="hidden">
-        <h3 id="unit-nama" style="color:#facc15"></h3>
+        <h3 id="unit-nama" style="color:#facc15; text-align:center;"></h3>
         <div class="table-area">
             <table>
-                <thead><tr><th>Tgl</th><th>Selisih</th><th>Status</th></tr></thead>
+                <thead>
+                    <tr><th>Tgl</th><th>Selisih</th><th>Aksi/Status</th></tr>
+                </thead>
                 <tbody id="isi-tabel"></tbody>
             </table>
         </div>
-        <button class="btn-unit" style="background:#eee" onclick="location.reload()">KEMBALI</button>
+        <button class="btn-back" onclick="location.reload()">KEMBALI</button>
     </div>
 </div>
 
 <script>
-    // ID Spreadsheet Anda (tetap)
     const SSID = "1rFuTdUTSuUeQQAZDB7QPngRvDwkTh34ZtrUxYo9Zu7U";
+    // Link Link Google Sheets Anda untuk tombol "Isi Keterangan"
+    const LINK_SHEET = "https://docs.google.com/spreadsheets/d/" + SSID;
 
     async function muatData(nama, gid) {
         document.getElementById('menu').classList.add('hidden');
         document.getElementById('detail').classList.remove('hidden');
         document.getElementById('unit-nama').innerText = "Unit: " + nama;
         const tb = document.getElementById('isi-tabel');
-        tb.innerHTML = "<tr><td colspan='3'>Menyambungkan...</td></tr>";
+        tb.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:20px;'>Mencari Data...</td></tr>";
 
-        // URL Gviz dengan parameter t=... untuk memaksa ambil data terbaru (anti-cache)
         const url = `https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`;
 
         try {
@@ -66,39 +76,46 @@
             lines.forEach(line => {
                 const col = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, "").trim());
                 const tgl = col[1];
-                const sel = col[2];
+                const selRaw = col[2];
                 const ket = (col[3] || "").toUpperCase();
 
-                if (tgl && tgl !== "" && tgl !== "null") {
-                    const blmIsi = (ket === "" || ket === "NULL" || ket === "-");
-                    tb.innerHTML += `<tr class="${blmIsi ? 'warning' : ''}">
-                        <td>${tgl}</td>
-                        <td>${sel}</td>
-                        <td>${blmIsi ? '⚠️ CEK' : '✅ DONE'}</td>
-                    </tr>`;
+                if (tgl && tgl !== "null") {
+                    let teksSelisih, kelasSelisih, tombolAksi;
+                    
+                    // 1. Logika Deteksi Strip (-)
+                    if (selRaw === "-" || selRaw === "0" || selRaw === "") {
+                        teksSelisih = "Tidak Ada Selisih";
+                        kelasSelisih = "no-selisih";
+                        tombolAksi = `<span class="btn-aksi btn-done">✅ AMAN</span>`;
+                    } else {
+                        teksSelisih = "Rp " + selRaw;
+                        kelasSelisih = "ada-selisih";
+
+                        // 2. Logika Tombol Berdasarkan Keterangan di Sheets
+                        if (ket === "DONE") {
+                            tombolAksi = `<span class="btn-aksi btn-done">DONE</span>`;
+                        } else if (ket === "PROSES") {
+                            tombolAksi = `<a href="${LINK_SHEET}" target="_blank" class="btn-aksi btn-proses">PROSES...</a>`;
+                        } else {
+                            // Jika kosong, muncul tombol "Isi Keterangan"
+                            tombolAksi = `<a href="${LINK_SHEET}" target="_blank" class="btn-aksi btn-isi">ISI KET</a>`;
+                        }
+                    }
+
+                    const barisWarning = (kelasSelisih === "ada-selisih" && ket !== "DONE");
+
+                    tb.innerHTML += `
+                        <tr class="${barisWarning ? 'warning' : ''}">
+                            <td>${tgl}</td>
+                            <td class="${kelasSelisih}">${teksSelisih}</td>
+                            <td style="text-align:center;">${tombolAksi}</td>
+                        </tr>`;
                 }
             });
         } catch (e) {
-            tb.innerHTML = "<tr><td colspan='3' style='color:red'>Gagal Konek! Cek Internet/Izin Sheets.</td></tr>";
+            tb.innerHTML = "<tr><td colspan='3'>Gagal koneksi.</td></tr>";
         }
     }
-
-    // Fungsi cek notifikasi otomatis saat baru buka web
-    async function cekNotif() {
-        const gids = ['0', '1565950302'];
-        for (let gid of gids) {
-            try {
-                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`);
-                const text = await res.text();
-                const adaKosong = text.split('\n').slice(1).some(line => {
-                    const col = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, "").trim());
-                    return col[1] && col[1] !== "null" && (col[3] === "" || col[3] === "NULL");
-                });
-                if (adaKosong) document.getElementById('badge-' + gid).classList.remove('hidden');
-            } catch (e) {}
-        }
-    }
-    cekNotif();
 </script>
 </body>
 </html>
