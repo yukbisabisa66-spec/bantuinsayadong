@@ -28,7 +28,6 @@
                 radial-gradient(at 0% 0%, hsla(210,100%,15%,1) 0, transparent 50%), 
                 radial-gradient(at 100% 100%, hsla(45,100%,15%,1) 0, transparent 50%);
             display: flex; justify-content: center; align-items: center; padding: 15px; color: white;
-            overflow-x: hidden;
         }
 
         .glass-card { 
@@ -40,32 +39,22 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             width: 100%; max-width: 410px; 
             box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8);
-            animation: cardEntrance 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        @keyframes cardEntrance {
-            from { opacity: 0; transform: scale(0.9) translateY(30px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
+        /* Banner Notif */
         .banner-notif {
             background: var(--danger);
             color: white; padding: 12px; border-radius: 22px;
             margin-bottom: 20px; display: none; font-weight: 800; text-align: center; 
-            font-size: 13px; letter-spacing: 1px;
-            box-shadow: 0 10px 30px rgba(255, 69, 58, 0.4);
+            font-size: 13px; box-shadow: 0 10px 30px rgba(255, 69, 58, 0.4);
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes popIn {
-            from { transform: scale(0.5); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         h2 { font-weight: 800; font-size: 32px; text-align: center; letter-spacing: -1.5px; margin-bottom: 5px; }
         .subtitle { text-align: center; opacity: 0.5; font-size: 13px; margin-bottom: 35px; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Button Menu */
         .btn-menu { 
             width: 100%; margin-bottom: 15px; padding: 25px; 
             background: var(--glass-thick); color: white; border: 1px solid rgba(255,255,255,0.1);
@@ -74,7 +63,7 @@
             transition: all 0.3s ease;
         }
 
-        .btn-menu:active { transform: scale(0.95); background: rgba(255,255,255,0.25); }
+        .btn-menu:active { transform: scale(0.95); }
 
         .notif-badge {
             background: var(--danger); color: white; width: 24px; height: 24px;
@@ -86,46 +75,18 @@
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* Elastic Toggle Switch */
-        .toggle-container {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.05); padding: 15px 20px;
-            border-radius: 22px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .ios-switch {
-            position: relative; width: 55px; height: 30px;
-            appearance: none; background: #39393d; border-radius: 15px;
-            cursor: pointer; transition: background 0.3s;
-        }
-
-        .ios-switch::before {
-            content: ""; position: absolute; width: 26px; height: 26px;
-            background: white; border-radius: 50%; top: 2px; left: 2px;
-            transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
-        }
-
-        .ios-switch:checked { background: var(--success); }
-        .ios-switch:checked::before { left: 27px; }
-        .ios-switch:active::before { width: 35px; } /* Efek Kenyal/Elastic */
-
-        /* Row Items */
+        /* List Items */
         .row-item {
             background: rgba(255, 255, 255, 0.04);
             margin-bottom: 12px; padding: 20px; border-radius: 25px;
             display: flex; flex-direction: column; gap: 15px;
             border: 1px solid rgba(255,255,255,0.05);
-            animation: slideUp 0.5s ease forwards;
         }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .row-header { display: flex; justify-content: space-between; align-items: center; }
-        .row-date { font-weight: 700; font-size: 16px; color: rgba(255,255,255,0.9); }
+        .row-date { font-weight: 700; font-size: 16px; }
         
-        .status-pill {
-            padding: 5px 12px; border-radius: 12px; font-weight: 800; font-size: 13px;
-        }
+        .status-pill { padding: 5px 12px; border-radius: 12px; font-weight: 800; font-size: 13px; }
 
         .action-area { display: flex; gap: 10px; }
         
@@ -137,9 +98,7 @@
         .btn-save { 
             background: var(--ios-blue); border: none; padding: 12px 20px;
             border-radius: 15px; color: white; font-weight: 700; cursor: pointer;
-            transition: 0.2s;
         }
-        .btn-save:active { transform: scale(0.9); opacity: 0.8; }
 
         .loader-ring {
             width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1);
@@ -148,13 +107,12 @@
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        .row-hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="glass-card">
-    <div id="notif-banner" class="banner-notif">ADA SELISIH BELUM SELESAI</div>
+    <div id="notif-banner" class="banner-notif">⚠️ ADA SELISIH YANG PERLU DIPROSES</div>
 
     <div id="screen-menu">
         <h2>ATM Monitor</h2>
@@ -173,16 +131,10 @@
 
     <div id="screen-detail" style="display:none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <button onclick="location.reload()" style="background:none; border:none; color:var(--ios-blue); font-size: 17px; cursor:pointer; font-weight:600;">􀆉 Kembali</button>
-            <h3 id="unit-title" style="font-size: 18px; letter-spacing: -0.5px;"></h3>
+            <button onclick="location.reload()" style="background:none; border:none; color:var(--ios-blue); font-size: 17px; cursor:pointer; font-weight:600;">Kembali</button>
+            <h3 id="unit-title" style="font-size: 18px;"></h3>
             <div style="width: 50px;"></div>
         </div>
-
-        <div class="toggle-container">
-            <span style="font-size: 14px; font-weight: 600; opacity: 0.8;">Hanya Selisih</span>
-            <input type="checkbox" class="ios-switch" id="filterSwitch" onchange="jalankanFilter()">
-        </div>
-
         <div id="data-list"></div>
     </div>
 </div>
@@ -193,13 +145,10 @@
 
     window.onload = cekGlobal;
 
-    function vibrate() {
-        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(15);
-    }
-
+    // FUNGSI CEK NOTIFIKASI
     async function cekGlobal() {
         const units = [{ n: 'Gersik', g: '0' }, { n: 'Maridan', g: '1565950302' }];
-        let adaMasalah = false;
+        let bannerMuncul = false;
 
         for (let u of units) {
             try {
@@ -207,28 +156,35 @@
                 const csv = await res.text();
                 const lines = csv.split('\n').slice(1);
                 
-                let issue = lines.some(l => {
+                // Logika: Selisih ada (bukan 0/-) DAN keterangan bukan "DONE"
+                let adaMasalah = lines.some(l => {
                     const c = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    const sel = (c[2] || "").replace(/"/g, "").trim();
-                    const ket = (c[3] || "").replace(/"/g, "").toUpperCase().trim();
-                    return (sel !== "" && sel !== "0" && sel !== "-" && ket !== "DONE");
+                    const selVal = (c[2] || "").replace(/"/g, "").trim();
+                    const ketVal = (c[3] || "").replace(/"/g, "").toUpperCase().trim();
+                    
+                    const punyaSelisih = (selVal !== "" && selVal !== "0" && selVal !== "-");
+                    const belumDone = (ketVal !== "DONE");
+                    
+                    return (punyaSelisih && belumDone);
                 });
 
-                if (issue) {
-                    adaMasalah = true;
+                if (adaMasalah) {
+                    bannerMuncul = true;
                     document.getElementById('badge-' + u.n).innerHTML = `<div class="notif-badge">!</div>`;
+                } else {
+                    document.getElementById('badge-' + u.n).innerHTML = `􀆊`;
                 }
             } catch (e) {}
         }
-        if (adaMasalah) document.getElementById('notif-banner').style.display = 'block';
+        
+        // Tampilkan banner hanya jika ada minimal 1 unit bermasalah
+        document.getElementById('notif-banner').style.display = bannerMuncul ? 'block' : 'none';
     }
 
     async function muatData(nama, gid) {
-        vibrate();
         document.getElementById('screen-menu').style.display = 'none';
         document.getElementById('screen-detail').style.display = 'block';
         document.getElementById('unit-title').innerText = "Unit " + nama;
-        
         const list = document.getElementById('data-list');
         list.innerHTML = `<div class="loader-ring"></div>`;
 
@@ -238,24 +194,23 @@
             const baris = csv.split('\n').slice(1);
             list.innerHTML = "";
 
-            baris.forEach((b, i) => {
+            baris.forEach((b) => {
                 const c = b.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g, "").trim());
                 if (!c[1] || c[1] === "null") return;
 
                 const tgl = c[1], sel = c[2], ket = (c[3] || "").toUpperCase();
                 const isAman = (sel === "" || sel === "0" || sel === "-");
-                const isWarning = (!isAman && ket !== "DONE");
+                const isProblem = (!isAman && ket !== "DONE");
 
                 const item = document.createElement('div');
-                item.className = `row-item ${isAman ? 'row-safe' : 'row-warning'}`;
-                item.style.animationDelay = `${i * 0.05}s`;
-                if(isWarning) item.style.borderLeft = "4px solid var(--warning)";
+                item.className = 'row-item';
+                if(isProblem) item.style.borderLeft = "4px solid var(--danger)";
 
                 item.innerHTML = `
                     <div class="row-header">
                         <span class="row-date">${tgl}</span>
-                        <span class="status-pill" style="background: ${isAman ? 'rgba(50,215,75,0.1)' : 'rgba(255,159,10,0.1)'}; color: ${isAman ? 'var(--success)' : 'var(--warning)'}">
-                            ${isAman ? '✓ AMAN' : 'Rp ' + sel}
+                        <span class="status-pill" style="background: ${isAman || ket === 'DONE' ? 'rgba(50,215,75,0.1)' : 'rgba(255,69,58,0.1)'}; color: ${isAman || ket === 'DONE' ? 'var(--success)' : 'var(--danger)'}">
+                            ${isAman ? '✓ AMAN' : (ket === 'DONE' ? '✓ SELESAI' : 'Rp ' + sel)}
                         </span>
                     </div>
                     <div class="action-area">
@@ -269,15 +224,13 @@
                 `;
                 list.appendChild(item);
             });
-        } catch (e) { list.innerHTML = "Gagal memuat data."; }
+        } catch (e) { list.innerHTML = "Gagal memuat."; }
     }
 
     async function simpanData(tgl, unit, btn) {
         const val = document.getElementById(`sel-${tgl}`).value;
         if(!val) return;
         
-        vibrate();
-        const originalText = btn.innerText;
         btn.innerText = "...";
         btn.disabled = true;
 
@@ -288,25 +241,17 @@
             btn.innerText = "✓";
             btn.style.background = "var(--success)";
             
+            // Re-check status global setelah simpan agar notif banner hilang jika semua sudah DONE
             setTimeout(() => {
-                if(val === "DONE") btn.closest('.row-item').style.opacity = "0.4";
-                btn.innerText = originalText;
+                cekGlobal(); 
+                btn.innerText = "Ok";
                 btn.style.background = "var(--ios-blue)";
                 btn.disabled = false;
             }, 1000);
         } catch (e) {
-            alert("Gagal Simpan");
             btn.innerText = "Ok";
             btn.disabled = false;
         }
-    }
-
-    function jalankanFilter() {
-        vibrate();
-        const aktif = document.getElementById('filterSwitch').checked;
-        document.querySelectorAll('.row-safe').forEach(el => {
-            el.classList.toggle('row-hidden', aktif);
-        });
     }
 </script>
 </body>
