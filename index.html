@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ATM Monitor</title>
+    <title>ATM Monitor KCP</title>
     <style>
         :root {
             --gold: #D4AF37; --bg: #0A0A0B; --card: #1C1C1E;
@@ -38,7 +38,7 @@
         .is-problem { border-left: 6px solid var(--red); }
 
         .action-grid { display: grid; grid-template-columns: 1fr 80px; gap: 12px; margin-top: 18px; }
-        select, input { background: var(--bg); border: 1.5px solid var(--border); border-radius: 14px; color: var(--text); padding: 14px; font-size: 14px; outline: none; width: 100%; -webkit-appearance: none; }
+        select, input { background: var(--bg); border: 1.5px solid var(--border); border-radius: 14px; color: var(--text); padding: 14px; font-size: 14px; outline: none; width: 100%; }
 
         .btn-gold { background: var(--gold); border: none; border-radius: 14px; color: #000; font-weight: 800; cursor: pointer; }
         .status-badge { padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; }
@@ -74,17 +74,17 @@
         </div>
 
         <div class="filter-bar">
-            <div class="filter-chip active" onclick="filterUnits('all', this)">Semua KC</div>
+            <div class="filter-chip active" onclick="filterUnits('all', this)">Semua KCP</div>
             <div class="filter-chip" onclick="filterUnits('problem', this)">Masalah</div>
         </div>
 
         <div id="unit-list">
             <div class="card unit-card" onclick="openUnit('Gersik', '0')" id="card-Gersik">
-                <div><h3>KC Gersik</h3><p id="sub-Gersik" style="font-size:13px; opacity:0.6;">Loading...</p></div>
+                <div><h3>KCP Gersik</h3><p id="sub-Gersik" style="font-size:13px; opacity:0.6;">Loading...</p></div>
                 <div class="arrow-icon">❯</div>
             </div>
             <div class="card unit-card" onclick="openUnit('Maridan', '1565950302')" id="card-Maridan">
-                <div><h3>KC Maridan</h3><p id="sub-Maridan" style="font-size:13px; opacity:0.6;">Loading...</p></div>
+                <div><h3>KCP Maridan</h3><p id="sub-Maridan" style="font-size:13px; opacity:0.6;">Loading...</p></div>
                 <div class="arrow-icon">❯</div>
             </div>
         </div>
@@ -92,7 +92,7 @@
 
     <div id="detail-screen" class="hidden">
         <button onclick="location.reload()" style="background:none; border:none; color:var(--gold); font-weight:800; cursor:pointer; margin-bottom:20px; font-size: 14px;">❮ KEMBALI</button>
-        <h2 id="title-detail" style="margin-bottom:20px; font-size: 24px;">Detail KC</h2>
+        <h2 id="title-detail" style="margin-bottom:20px; font-size: 24px;">Detail KCP</h2>
         
         <div class="filter-bar">
             <div class="filter-chip active" onclick="filterItems('all', this)">Semua Log</div>
@@ -120,7 +120,7 @@
 
 <script>
     const SSID = "1rFuTdUTSuUeQQAZDB7QPngRvDwkTh34ZtrUxYo9Zu7U";
-    const WEB_URL = "https://script.google.com/macros/s/AKfycbyNxyeaXTNKOAuXfOXd1I7P7vsWs2FtGaZX7D1vDms5k3yzuB5Vg_FRurWvLqQUOUbxcA/exec";
+    const WEB_URL = "URL_DEPLOY_BARU_ANDA"; 
 
     let curUnit = "", curGid = "", gTotal = 0, gSafe = 0;
 
@@ -171,7 +171,7 @@
         curUnit = nama; curGid = gid;
         document.getElementById('menu-screen').classList.add('hidden');
         document.getElementById('detail-screen').classList.remove('hidden');
-        document.getElementById('title-detail').innerText = "KC " + nama;
+        document.getElementById('title-detail').innerText = "KCP " + nama;
         const container = document.getElementById('items-container');
         container.innerHTML = "<p style='text-align:center; padding:20px; opacity:0.5;'>Loading data...</p>";
 
