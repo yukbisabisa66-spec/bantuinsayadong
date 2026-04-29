@@ -6,228 +6,271 @@
     <title>ATM Monitor KCP</title>
     <style>
         :root {
-            /* Default: Dark Gold iOS */
-            --bg-gradient: linear-gradient(135deg, #000000, #1c1c1e, #2c2c2e);
-            --card-bg: rgba(28, 28, 30, 0.7);
-            --glass: blur(20px) saturate(180%);
-            --text: #FFFFFF; --subtext: #8E8E93;
-            --accent: #D4AF37; --border: rgba(255, 255, 255, 0.1);
-            --red: #FF453A; --green: #32D74B;
-        }
-
-        [data-theme="blue"] {
-            --bg-gradient: linear-gradient(135deg, #001220, #002d4d, #004d80);
-            --accent: #0A84FF; --card-bg: rgba(10, 30, 50, 0.6);
-        }
-
-        [data-theme="emerald"] {
-            --bg-gradient: linear-gradient(135deg, #011305, #0a2b12, #144d21);
-            --accent: #30D158; --card-bg: rgba(15, 40, 20, 0.6);
+            /* Warna Khas iOS */
+            --ios-blue: #007AFF;
+            --ios-bg: #000000;
+            --ios-card: rgba(28, 28, 30, 0.7);
+            --ios-text: #FFFFFF;
+            --ios-subtext: #8E8E93;
+            --ios-border: rgba(255, 255, 255, 0.15);
+            --ios-red: #FF453A;
+            --ios-green: #32D74B;
+            --ios-gold: #D4AF37;
+            /* Efek Blur Apple */
+            --glass: blur(25px) saturate(180%) -webkit-backdrop-filter: blur(25px) saturate(180%);
         }
 
         [data-theme="light"] {
-            --bg-gradient: linear-gradient(135deg, #F2F2F7, #E5E5EA, #D1D1D6);
-            --card-bg: rgba(255, 255, 255, 0.7);
-            --text: #000000; --subtext: #636366;
-            --border: rgba(0, 0, 0, 0.1); --glass: blur(25px) saturate(200%);
+            --ios-bg: #F2F2F7;
+            --ios-card: rgba(255, 255, 255, 0.8);
+            --ios-text: #000000;
+            --ios-subtext: #636366;
+            --ios-border: rgba(0, 0, 0, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            background: var(--bg-gradient); 
-            background-size: 400% 400%;
-            animation: meshGradient 15s ease infinite;
-            color: var(--text); 
-            min-height: 100vh;
+            background: var(--ios-bg); 
+            color: var(--ios-text); 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+            line-height: 1.4;
             display: flex; justify-content: center;
-            overflow-x: hidden;
         }
 
-        @keyframes meshGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .app-container { width: 100%; max-width: 430px; min-height: 100vh; position: relative; padding: 0 16px 100px 16px; }
+
+        /* Header Apple Style */
+        header { padding: 60px 0 20px 0; border-bottom: none; }
+        header p { color: var(--ios-gold); font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+        header h1 { font-size: 34px; font-weight: 800; letter-spacing: -1px; }
+
+        /* Ring Progress Card */
+        .analytics-card { 
+            background: var(--ios-card); backdrop-filter: var(--glass);
+            border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 20px;
+            margin-bottom: 24px; border: 0.5px solid var(--ios-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
+        .ring-container { position: relative; width: 60px; height: 60px; }
+        svg { transform: rotate(-90deg); width: 60px; height: 60px; }
+        circle { fill: none; stroke-width: 6; stroke-linecap: round; }
+        .circle-bg { stroke: var(--ios-border); }
+        .circle-proc { stroke: var(--ios-gold); stroke-dasharray: 188; stroke-dashoffset: 188; transition: 1s ease-out; }
 
-        .app-container { width: 100%; max-width: 430px; padding: 20px; padding-top: 60px; }
-
-        /* Theme Switcher iOS Style */
-        .theme-hub { 
-            display: flex; gap: 12px; margin-bottom: 30px; 
-            padding: 10px; background: var(--card-bg); 
-            backdrop-filter: var(--glass); border-radius: 20px;
-            justify-content: center; border: 1px solid var(--border);
+        /* Filter Tab iOS Style */
+        .filter-bar { 
+            display: flex; background: var(--ios-card); padding: 3px; border-radius: 10px; margin-bottom: 24px;
+            backdrop-filter: var(--glass); border: 0.5px solid var(--ios-border);
         }
-        .dot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.2); }
-
-        header h1 { font-size: 34px; font-weight: 800; letter-spacing: -1px; margin-bottom: 5px; }
-        header p { font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 30px;}
-
-        /* Card iOS Style */
-        .ios-card {
-            background: var(--card-bg);
-            backdrop-filter: var(--glass);
-            -webkit-backdrop-filter: var(--glass);
-            border-radius: 22px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        .filter-chip { 
+            flex: 1; text-align: center; padding: 8px 0; border-radius: 8px; 
+            font-size: 13px; font-weight: 600; cursor: pointer; color: var(--ios-text);
         }
+        .filter-chip.active { background: #636366; color: white; box-shadow: 0 3px 8px rgba(0,0,0,0.12); }
 
-        .analytics { display: flex; align-items: center; gap: 20px; }
-        .ring { position: relative; width: 65px; height: 65px; }
-        svg { transform: rotate(-90deg); width: 65px; height: 65px; }
-        circle { fill: none; stroke-width: 7; stroke-linecap: round; }
-        .c-bg { stroke: var(--border); }
-        .c-proc { stroke: var(--accent); stroke-dasharray: 200; stroke-dashoffset: 200; transition: 1.5s ease-out; }
-
-        /* KCP List */
-        .kcp-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            cursor: pointer; active: scale(0.97); 
+        /* List Items */
+        .ios-list-title { font-size: 13px; font-weight: 600; color: var(--ios-subtext); margin: 0 0 8px 8px; text-transform: uppercase; }
+        .list-group { background: var(--ios-card); border-radius: 12px; overflow: hidden; border: 0.5px solid var(--ios-border); }
+        
+        .unit-card { 
+            padding: 16px; display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 0.5px solid var(--ios-border); cursor: pointer;
         }
-        .kcp-item h3 { font-size: 19px; font-weight: 700; }
-        .arrow { font-size: 18px; opacity: 0.3; }
-
-        /* Filter Chips */
-        .filter-group { display: flex; gap: 8px; margin-bottom: 20px; }
-        .chip { 
-            padding: 8px 16px; border-radius: 12px; 
-            background: var(--card-bg); backdrop-filter: var(--glass);
-            font-size: 13px; font-weight: 600; color: var(--subtext);
-            border: 1px solid var(--border); cursor: pointer;
-        }
-        .chip.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .unit-card:last-child { border-bottom: none; }
+        .unit-card:active { background: rgba(255,255,255,0.1); }
+        .unit-card h3 { font-size: 17px; font-weight: 600; }
+        .unit-card p { font-size: 14px; margin-top: 2px; }
 
         /* Detail Items */
-        .status-pill { 
-            padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800;
-            text-transform: uppercase;
+        .log-card {
+            background: var(--ios-card); border-radius: 16px; padding: 16px; margin-bottom: 12px;
+            border: 0.5px solid var(--ios-border); position: relative; overflow: hidden;
+        }
+        .is-problem { border-left: 5px solid var(--ios-red); }
+        .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+
+        /* Navigation Bar (Bottom) */
+        .nav-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: 85px; background: rgba(28, 28, 30, 0.8);
+            backdrop-filter: var(--glass); border-top: 0.5px solid var(--ios-border);
+            display: flex; justify-content: space-around; padding-top: 10px; z-index: 100;
+        }
+        .nav-item { text-align: center; color: var(--ios-subtext); font-size: 10px; font-weight: 500; text-decoration: none; }
+        .nav-item.active { color: var(--ios-gold); }
+        .nav-icon { font-size: 24px; margin-bottom: 4px; display: block; }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px;
+            background: var(--ios-gold); border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 28px; color: black; border: none;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3); z-index: 99;
         }
 
-        .fab {
-            position: fixed; bottom: 40px; right: 30px;
-            width: 60px; height: 60px; background: var(--accent);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3); color: #000; font-size: 30px; border: none;
+        /* Modal Custom iOS */
+        .modal { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); 
+            display: none; justify-content: center; align-items: flex-end; z-index: 1000;
+        }
+        .modal-content { 
+            background: #1C1C1E; width: 100%; max-width: 430px; padding: 25px; 
+            border-top-left-radius: 20px; border-top-right-radius: 20px;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        select, input { 
+            background: #2C2C2E; border: none; border-radius: 10px; color: white; 
+            padding: 12px; width: 100%; margin-bottom: 12px; font-size: 16px;
+        }
+        .btn-ios { 
+            background: var(--ios-gold); color: black; border: none; border-radius: 12px; 
+            padding: 14px; width: 100%; font-weight: 700; font-size: 16px;
         }
 
         .hidden { display: none !important; }
-        
-        select, input {
-            width: 100%; padding: 15px; border-radius: 14px;
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-            color: var(--text); font-size: 15px; outline: none; margin-top: 10px;
-        }
+        .arrow-icon { opacity: 0.3; font-weight: normal; }
     </style>
 </head>
 <body data-theme="dark">
 
 <div class="app-container">
-    <div class="theme-hub">
-        <div class="dot" style="background: #D4AF37;" onclick="setTheme('dark')"></div>
-        <div class="dot" style="background: #0A84FF;" onclick="setTheme('blue')"></div>
-        <div class="dot" style="background: #30D158;" onclick="setTheme('emerald')"></div>
-        <div class="dot" style="background: #FFFFFF;" onclick="setTheme('light')"></div>
-    </div>
-
-    <div id="screen-main">
+    <div id="menu-screen">
         <header>
-            <p>Bankaltimtara</p>
+            <p>Sistem Pemantauan</p>
             <h1>ATM Monitor</h1>
         </header>
 
-        <div class="ios-card analytics">
-            <div class="ring">
-                <svg><circle class="c-bg" cx="32.5" cy="32.5" r="28"></circle><circle id="progress-ring" class="c-proc" cx="32.5" cy="32.5" r="28"></circle></svg>
-                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-weight:800; font-size:14px;" id="percent-txt">0%</div>
+        <div class="analytics-card">
+            <div class="ring-container">
+                <svg><circle class="circle-bg" cx="30" cy="30" r="27"></circle><circle id="progress-ring" class="circle-proc" cx="30" cy="30" r="27"></circle></svg>
+                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-weight:700; font-size:13px;" id="percent-txt">0%</div>
             </div>
             <div>
-                <p style="font-size: 12px; color: var(--subtext); font-weight: 600;">OPERASIONAL KCP</p>
-                <h2 id="summary-txt">Syncing...</h2>
+                <h3 id="summary-txt" style="font-size: 18px; margin-bottom: 2px;">Syncing Data...</h3>
+                <p style="font-size: 13px; color: var(--ios-subtext);">Kinerja Operasional KCP</p>
             </div>
         </div>
 
-        <div class="filter-group">
-            <div class="chip active" onclick="filterUnits('all', this)">Semua</div>
-            <div class="chip" onclick="filterUnits('problem', this)">Masalah ⚠</div>
+        <div class="filter-bar">
+            <div class="filter-chip active" onclick="filterUnits('all', this)">Semua Unit</div>
+            <div class="filter-chip" onclick="filterUnits('problem', this)">Ada Masalah</div>
         </div>
 
-        <div id="kcp-list">
-            <div class="ios-card kcp-item" onclick="openUnit('Gersik', '0')" id="card-Gersik">
-                <div><h3 id="name-Gersik">KCP Gersik</h3><p id="sub-Gersik" style="font-size:13px; color:var(--subtext);">Loading...</p></div>
-                <div class="arrow">❯</div>
+        <p class="ios-list-title">Daftar Kantor Cabang Pembantu</p>
+        <div class="list-group" id="unit-list">
+            <div class="unit-card" onclick="openUnit('Gersik', '0')" id="card-Gersik">
+                <div><h3>KCP Gersik</h3><p id="sub-Gersik">Loading...</p></div>
+                <div class="arrow-icon">❯</div>
             </div>
-            <div class="ios-card kcp-item" onclick="openUnit('Maridan', '1565950302')" id="card-Maridan">
-                <div><h3 id="name-Maridan">KCP Maridan</h3><p id="sub-Maridan" style="font-size:13px; color:var(--subtext);">Loading...</p></div>
-                <div class="arrow">❯</div>
+            <div class="unit-card" onclick="openUnit('Maridan', '1565950302')" id="card-Maridan">
+                <div><h3>KCP Maridan</h3><p id="sub-Maridan">Loading...</p></div>
+                <div class="arrow-icon">❯</div>
             </div>
         </div>
     </div>
 
-    <div id="screen-detail" class="hidden">
-        <button onclick="location.reload()" style="background:none; border:none; color:var(--accent); font-weight:700; cursor:pointer; margin-bottom:20px; font-size:16px;">❮ KCP List</button>
-        <h1 id="title-detail" style="margin-bottom:25px;">Detail</h1>
+    <div id="detail-screen" class="hidden">
+        <header style="padding-top: 40px; text-align: left;">
+            <button onclick="location.reload()" style="background:none; border:none; color:var(--ios-blue); font-size:17px; margin-bottom:15px; cursor:pointer;">❮ Back</button>
+            <h1 id="title-detail" style="font-size: 28px;">Detail KCP</h1>
+        </header>
         
+        <div class="filter-bar">
+            <div class="filter-chip active" onclick="filterItems('all', this)">Semua Log</div>
+            <div class="filter-chip" onclick="filterItems('issue', this)">Hanya Selisih</div>
+        </div>
+
         <div id="items-container"></div>
-        <button class="fab" onclick="showModal()">+</button>
+    </div>
+
+    <div class="nav-bar">
+        <a href="#" class="nav-item active"><span class="nav-icon">📊</span>Status</a>
+        <a href="#" class="nav-item" onclick="toggleTheme()"><span class="nav-icon" id="themeIcon">🌙</span>Tema</a>
+        <a href="#" class="nav-item"><span class="nav-icon">⚙️</span>Setting</a>
+    </div>
+
+    <button class="fab" onclick="showModal()">+</button>
+</div>
+
+<div id="modalAdd" class="modal">
+    <div class="modal-content">
+        <div style="width: 40px; height: 5px; background: #3A3A3C; border-radius: 10px; margin: 0 auto 20px;"></div>
+        <h2 style="margin-bottom:20px; text-align: center; font-size: 20px;">Input Data KCP</h2>
+        <label style="font-size: 12px; color: var(--ios-subtext); margin-bottom: 5px; display: block;">Tanggal Transaksi</p>
+        <input type="date" id="in-tgl">
+        <input type="number" id="in-selisih" placeholder="Jumlah Selisih (Isi 0 jika OK)">
+        <select id="in-status">
+            <option value="PROSES">PROSES</option>
+            <option value="DONE">DONE</option>
+        </select>
+        <button class="btn-ios" onclick="prosesTambah()">Simpan Data</button>
+        <button onclick="hideModal()" style="background:none; border:none; color:var(--ios-blue); width:100%; margin-top:15px; font-size: 16px; cursor:pointer;">Batalkan</button>
     </div>
 </div>
 
 <script>
+    // URL & Logic tetap sama seperti sebelumnya, hanya UI yang berubah drastis
     const SSID = "1rFuTdUTSuUeQQAZDB7QPngRvDwkTh34ZtrUxYo9Zu7U";
-    const WEB_URL = "URL_APPS_SCRIPT_ANDA"; // GANTI DENGAN URL DEPLOY ANDA
+    const WEB_URL = "URL_DEPLOY_ANDA"; 
 
     let curUnit = "", curGid = "", gTotal = 0, gSafe = 0;
 
-    function setTheme(t) {
-        document.body.setAttribute('data-theme', t);
-        localStorage.setItem('kcpTheme', t);
+    function formatTglIndo(tglStr) {
+        const bln = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        const p = tglStr.split('/');
+        return p.length < 3 ? tglStr : `${p[0]} ${bln[parseInt(p[1]) - 1]} ${p[2]}`;
     }
 
-    window.onload = () => {
-        const saved = localStorage.getItem('kcpTheme') || 'dark';
-        setTheme(saved);
+    function formatRp(n) {
+        const num = parseInt(n.toString().replace(/[^0-9]/g, '')) || 0;
+        return "Rp " + num.toLocaleString('id-ID');
+    }
+
+    window.onload = () => { 
         checkUnit('Gersik', '0'); 
-        checkUnit('Maridan', '1565950302');
+        checkUnit('Maridan', '1565950302'); 
     };
 
-    // Fungsi Logika Penarikan & Filter Data
     async function checkUnit(nama, gid) {
-        const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`);
-        const csv = await res.text();
-        const rows = csv.split('\n').slice(1);
-        let iss = 0;
-        rows.forEach(r => {
-            const c = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g,"").trim());
-            if(!c[1]) return;
-            const sel = (c[2] || "").trim();
-            const ket = (c[3] || "").toUpperCase().trim();
-            gTotal++;
-            if (sel !== "0" && sel !== "-" && sel !== "" && ket !== "DONE") iss++; else gSafe++;
-        });
-        document.getElementById('sub-'+nama).innerText = iss > 0 ? iss + " Masalah Ditemukan" : "Operasional Normal";
-        document.getElementById('sub-'+nama).style.color = iss > 0 ? "var(--red)" : "var(--green)";
-        if(iss > 0) document.getElementById('card-'+nama).classList.add('is-problem');
-        updateRing();
+        try {
+            const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`);
+            const csv = await res.text();
+            const rows = csv.split('\n').slice(1);
+            let iss = 0;
+            rows.forEach(r => {
+                const c = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g,"").trim());
+                if (!c[1]) return;
+                const sel = (c[2] || "").trim();
+                const ket = (c[3] || "").toUpperCase().trim();
+                gTotal++;
+                if (sel !== "0" && sel !== "-" && sel !== "" && ket !== "DONE") iss++; else gSafe++;
+            });
+            const el = document.getElementById('sub-'+nama);
+            el.innerText = iss > 0 ? "⚠️ " + iss + " Masalah" : "✅ Operasional Aman";
+            el.style.color = iss > 0 ? "var(--ios-red)" : "var(--ios-green)";
+            if(iss > 0) document.getElementById('card-'+nama).setAttribute('data-state', 'problem');
+            updateRing();
+        } catch(e) { console.error(e); }
     }
 
     function updateRing() {
         const p = Math.round((gSafe/gTotal)*100) || 0;
-        document.getElementById('progress-ring').style.strokeDashoffset = 200 - (200*p/100);
+        const ring = document.getElementById('progress-ring');
+        if (ring) ring.style.strokeDashoffset = 188 - (188*p/100);
         document.getElementById('percent-txt').innerText = p + "%";
-        document.getElementById('summary-txt').innerText = p >= 90 ? "Excellent" : "Monitoring";
+        document.getElementById('summary-txt').innerText = p >= 90 ? "Kinerja Bagus" : "Perlu Atensi";
     }
 
     async function openUnit(nama, gid) {
         curUnit = nama; curGid = gid;
-        document.getElementById('screen-main').classList.add('hidden');
-        document.getElementById('screen-detail').classList.remove('hidden');
+        document.getElementById('menu-screen').classList.add('hidden');
+        document.getElementById('detail-screen').classList.remove('hidden');
         document.getElementById('title-detail').innerText = "KCP " + nama;
         const container = document.getElementById('items-container');
-        container.innerHTML = "<p style='text-align:center; padding:50px; opacity:0.5;'>Memuat data...</p>";
+        container.innerHTML = "<p style='text-align:center; padding:50px; opacity:0.5;'>Loading...</p>";
 
         const res = await fetch(`https://docs.google.com/spreadsheets/d/${SSID}/gviz/tq?tqx=out:csv&gid=${gid}&t=${Date.now()}`);
         const csv = await res.text();
@@ -235,27 +278,23 @@
         container.innerHTML = "";
 
         rows.forEach(r => {
-            const c = r.split(/,(?=(?:(?:[^"]*"){2})*[^original text ... ]*$)/).map(v => v.replace(/"/g,"").trim());
+            const c = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.replace(/"/g,"").trim());
             if(!c[1]) return;
-            const tgl = c[1];
-            const nominal = (c[2] || "").trim();
-            const ket = (c[3] || "").toUpperCase().trim();
-            const isProblem = (nominal !== "0" && nominal !== "-" && nominal !== "" && ket !== "DONE");
+            const isProblem = (c[2] !== "0" && c[2] !== "-" && c[2] !== "" && c[3].toUpperCase() !== "DONE");
 
             const div = document.createElement('div');
-            div.className = `ios-card`;
-            div.style.borderLeft = isProblem ? "6px solid var(--red)" : "6px solid var(--green)";
+            div.className = `log-card item-row ${isProblem ? 'is-problem' : ''}`;
             div.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><b style="font-size:17px;">${tgl}</b></div>
-                    <div class="status-pill" style="background:${isProblem?'rgba(255,69,58,0.1)':'rgba(48,209,88,0.1)'}; color:${isProblem?'var(--red)':'var(--green)'}">
+                    <b style="font-size:16px;">${formatTglIndo(c[1])}</b>
+                    <span class="status-badge" style="color:${isProblem ? 'var(--ios-red)' : 'var(--ios-green)'}; background:rgba(255,255,255,0.05)">
                         ${isProblem ? 'SELISIH' : 'AMAN'}
-                    </div>
+                    </span>
                 </div>
-                ${isProblem ? `<p style="margin:10px 0; font-weight:700; font-size:20px; color:var(--red)">Rp ${nominal}</p>` : ''}
-                <div style="margin-top:15px; display:flex; gap:10px;">
-                    <select id="sel-${tgl}" style="margin:0;"><option value="PROSES" ${ket==='PROSES'?'selected':''}>PROSES</option><option value="DONE" ${ket==='DONE'?'selected':''}>DONE</option></select>
-                    <button onclick="save('${tgl}', this)" style="background:var(--accent); border:none; padding:10px 20px; border-radius:12px; font-weight:700; color:#000;">Update</button>
+                ${isProblem ? `<p style="color:var(--ios-red); font-size:18px; font-weight:800; margin:10px 0;">${formatRp(c[2])}</p>` : `<p style="margin:10px 0; font-size:14px; opacity:0.6;">Tidak ada selisih.</p>`}
+                <div style="display:flex; gap:10px; margin-top:15px;">
+                    <select id="sel-${c[1]}" style="margin:0; padding:8px; font-size:13px;"><option value="PROSES" ${c[3]==='PROSES'?'selected':''}>PROSES</option><option value="DONE" ${c[3]==='DONE'?'selected':''}>DONE</option></select>
+                    <button class="btn-ios" style="width:80px; padding:0; font-size:13px;" onclick="save('${c[1]}', this)">Update</button>
                 </div>
             `;
             container.appendChild(div);
@@ -270,14 +309,42 @@
         setTimeout(() => openUnit(curUnit, curGid), 800);
     }
 
+    async function prosesTambah() {
+        const rawDate = document.getElementById('in-tgl').value;
+        if(!rawDate) return alert("Pilih tanggal!");
+        const d = new Date(rawDate);
+        const tgl = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+        const btn = document.querySelector(".btn-ios");
+        btn.innerText = "Saving...";
+        await fetch(`${WEB_URL}?action=tambah&tanggal=${encodeURIComponent(tgl)}&selisih=${document.getElementById('in-selisih').value || "0"}&status=${document.getElementById('in-status').value}&sheetName=${curUnit}`, {mode:'no-cors'});
+        hideModal(); openUnit(curUnit, curGid);
+    }
+
+    function toggleTheme() {
+        const b = document.body;
+        const isDark = b.getAttribute('data-theme') === 'dark';
+        b.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeIcon').innerText = isDark ? '☀️' : '🌙';
+    }
+
     function filterUnits(t, el) {
-        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        document.querySelectorAll('.kcp-item').forEach(c => {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active')); el.classList.add('active');
+        document.querySelectorAll('.unit-card').forEach(c => {
             if(t === 'all') c.classList.remove('hidden');
-            else c.classList.toggle('hidden', !c.classList.contains('is-problem'));
+            else c.classList.toggle('hidden', c.getAttribute('data-state') !== 'problem');
         });
     }
+
+    function filterItems(t, el) {
+        document.querySelectorAll('#detail-screen .filter-chip').forEach(c => c.classList.remove('active')); el.classList.add('active');
+        document.querySelectorAll('.item-row').forEach(row => {
+            if(t === 'all') row.classList.remove('hidden');
+            else row.classList.toggle('hidden', !row.classList.contains('is-problem'));
+        });
+    }
+
+    function showModal() { document.getElementById('modalAdd').style.display = 'flex'; }
+    function hideModal() { document.getElementById('modalAdd').style.display = 'none'; }
 </script>
 </body>
 </html>
